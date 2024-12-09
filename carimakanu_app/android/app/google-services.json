@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "227879121795",
+    "project_id": "carimakanu-14fa5",
+    "storage_bucket": "carimakanu-14fa5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227879121795:android:fe5deafd49311a423afcb6",
+        "android_client_info": {
+          "package_name": "com.example.carimakanu_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "227879121795-tcnisf2fgnr7stoppta8vpe5f3do2fc3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAISNbTdDa7oM4j7izLwjlOvZU26MemPDg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "227879121795-tcnisf2fgnr7stoppta8vpe5f3do2fc3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "227879121795-kb907bp5dl45688ijeq8p48b9nq8iqh0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.carimakanuApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
