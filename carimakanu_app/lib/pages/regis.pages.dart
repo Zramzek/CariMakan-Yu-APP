@@ -4,7 +4,6 @@ import 'dart:async';
 
 class RegisterScreen extends StatefulWidget {
   final String email;
-
   const RegisterScreen({super.key, required this.email});
 
   @override
@@ -19,7 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _handleLogin() async {
     String username = _usernameController.text.trim();
     if (username.isEmpty) {
-      _showMessage('Please enter your email.');
+      _showMessage('Please enter your username.');
       return;
     }
 

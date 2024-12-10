@@ -42,6 +42,8 @@ dependencies:
   flutter_dotenv: ^5.2.1
   gestures: ^1.0.0
   email_otp: ^3.0.2
+  http: ^1.2.2
+  firebase_dynamic_links: ^6.0.11
 
 dev_dependencies:
   flutter_test:

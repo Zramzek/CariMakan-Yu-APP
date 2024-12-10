@@ -1,3 +1,4 @@
+import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,6 +17,9 @@ class _OtpScreenState extends State<OtpScreen> {
   late Timer _timer;
   int _remainingTime = 60; // Timer starts at 60 seconds
   bool _isButtonDisabled = true;
+
+  // To store OTP input
+  final _authServices = AuthServices();
 
   @override
   void initState() {
@@ -42,22 +46,52 @@ class _OtpScreenState extends State<OtpScreen> {
     });
   }
 
-  void _resendOtp() {
+  void _resendOtp() async {
     setState(() {
       _remainingTime = 60;
       _isButtonDisabled = true;
       _startTimer();
-      // Logic to resend OTP goes here
     });
+
+    try {
+      await _authServices.sendOtp(widget.email);
+      _showMessage("OTP has been resent to your email.");
+    } catch (e) {
+      _showMessage("Failed to resend OTP: $e");
+    }
   }
+
+  void verifyOtp(String email, String enteredOtp) async {
+    bool isValid =
+        await _authServices.verifyOtpFromFirestore(email, enteredOtp);
+
+    if (isValid) {
+      // OTP is valid
+      print('OTP verified successfully');
+      // Proceed to the next step (e.g., navigate to another page)
+      Navigator.pushNamed(context, '/welcome');
+    } else {
+      // OTP is invalid or expired
+      print('Invalid or expired OTP');
+      // Show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid or expired OTP')),
+      );
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  final List<TextEditingController> _otpControllers =
+      List.generate(6, (index) => TextEditingController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          // title: const Text('Verifikasi'),
-          // centerTitle: true, // Centers the AppBar title
-          ),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: SingleChildScrollView(
@@ -100,7 +134,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         height: 70,
                         width: 60,
                         child: TextFormField(
-                          onSaved: (value) {},
+                          controller: _otpControllers[i],
                           onChanged: (value) {
                             if (value.length == 1) {
                               FocusScope.of(context).nextFocus();
@@ -133,7 +167,16 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 24.0),
                 ElevatedButton(
                   onPressed: () {
-                    // Add verification logic here
+                    // Collect the entered OTP from the TextFormFields
+                    String enteredOtp =
+                        ''; // Combine the input from the 6 fields
+                    for (var i = 0; i < 6; i++) {
+                      enteredOtp += _otpControllers[i]
+                          .text; // Assuming `_otpControllers` is a list of controllers
+                    }
+
+                    // Call verifyOtp with the user's email and entered OTP
+                    verifyOtp(widget.email, enteredOtp);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

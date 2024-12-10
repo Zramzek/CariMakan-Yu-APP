@@ -1,36 +1,26 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:email_otp/email_otp.dart';
+import 'dart:math';
 
-class OTPConfig {
-  static EmailPort mapPortToEmailPort(int port) {
-    switch (port) {
-      case 25:
-        return EmailPort.port25;
-      case 465:
-        return EmailPort.port465;
-      case 587:
-        return EmailPort.port587;
-      default:
-        throw Exception('Unsupported SMTP port: $port');
-    }
+class OTPManager {
+  String? _otp;
+  DateTime? _expiryTime;
+
+  // Generate and store OTP with expiration
+  String generateOtp(
+      {int length = 6, Duration expiryDuration = const Duration(minutes: 2)}) {
+    _otp = List.generate(length, (_) => (0 + (Random().nextInt(9))).toString())
+        .join();
+    _expiryTime = DateTime.now().add(expiryDuration);
+    return _otp!;
   }
 
-  static void initialize() {
-    EmailOTP.config(
-      appName: 'Your App Name',
-      otpType: OTPType.numeric,
-      expiry: 30000,
-      emailTheme: EmailTheme.v6,
-      appEmail: dotenv.env['SMTP_USER']!,
-      otpLength: 6,
-    );
-
-    EmailOTP.setSMTP(
-      host: dotenv.env['SMTP_HOST']!,
-      emailPort: mapPortToEmailPort(int.parse(dotenv.env['SMTP_PORT']!)),
-      secureType: SecureType.tls,
-      username: dotenv.env['SMTP_USER']!,
-      password: dotenv.env['SMTP_PASS']!,
-    );
+  // Verify OTP and check expiration
+  bool verifyOtp(String enteredOtp) {
+    if (_otp == null || _expiryTime == null) {
+      return false; // OTP not set
+    }
+    if (DateTime.now().isAfter(_expiryTime!)) {
+      return false; // OTP expired
+    }
+    return _otp == enteredOtp; // Check if OTP matches
   }
 }

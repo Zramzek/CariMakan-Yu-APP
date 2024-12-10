@@ -1,7 +1,7 @@
-import 'package:carimakanu_app/config/otp.config.dart';
 import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
 import 'package:carimakanu_app/pages/regis.pages.dart';
+import 'package:carimakanu_app/pages/welcome.pages.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,7 +14,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  OTPConfig.initialize(); // Initialize OTP settings
   runApp(const MyApp());
 }
 
@@ -37,6 +36,7 @@ class MyApp extends StatelessWidget {
         '/auth/register': (context) => RegisterScreen(
               email: ModalRoute.of(context)?.settings.arguments as String,
             ),
+        'welcome': (context) => WelcomePage(),
       },
     );
   }
