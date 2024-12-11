@@ -22,8 +22,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    await authServices.updateUsername(widget.email, username);
-    await authServices.sendOtp(widget.email);
+    try {
+      await authServices.updateUsername(widget.email, username);
+      await authServices.sendOtp(widget.email);
+      Navigator.pushNamed(context, '/auth/otp', arguments: widget.email);
+    } catch (e) {
+      _showMessage('Error: $e');
+    }
 
     setState(() {
       _isLoading = true;

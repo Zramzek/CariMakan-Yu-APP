@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         '/auth/register': (context) => RegisterScreen(
               email: ModalRoute.of(context)?.settings.arguments as String,
             ),
-        'welcome': (context) => WelcomePage(),
+        '/welcome': (context) => WelcomePage(),
       },
     );
   }

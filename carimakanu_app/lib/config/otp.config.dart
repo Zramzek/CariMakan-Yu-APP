@@ -5,12 +5,15 @@ class OTPManager {
   DateTime? _expiryTime;
 
   // Generate and store OTP with expiration
-  String generateOtp(
+  Map<String, String> generateOtp(
       {int length = 6, Duration expiryDuration = const Duration(minutes: 2)}) {
     _otp = List.generate(length, (_) => (0 + (Random().nextInt(9))).toString())
         .join();
     _expiryTime = DateTime.now().add(expiryDuration);
-    return _otp!;
+    return {
+      "otp": _otp!,
+      "expiryTime": _expiryTime!.toIso8601String(),
+    };
   }
 
   // Verify OTP and check expiration

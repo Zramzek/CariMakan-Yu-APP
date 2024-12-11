@@ -20,17 +20,27 @@ class AuthServices {
     await _firestore.collection('Person').doc(email).set({
       'email': email,
       'username': null, // Placeholder for username
+      'otp': null, // Placeholder for username
+      'otpExpiry': null, // Placeholder for username
       'created_at': FieldValue.serverTimestamp(),
     });
   }
 
   Future<void> saveOtpToFirestore(
-      String email, String otp, Duration expiryDuration) async {
+      String email, String otp, String expiryTime) async {
     await _firestore.collection('Person').doc(email).set({
       'otp': otp,
-      'otpExpiry': DateTime.now().add(expiryDuration).toIso8601String(),
+      'otpExpiry': expiryTime,
     });
   }
+
+  // Future<void> saveOtpToFirestore(
+  //     String email, String otp, Duration expiryDuration) async {
+  //   await _firestore.collection('Person').doc(email).set({
+  //     'otp': otp,
+  //     'otpExpiry': DateTime.now().add(expiryDuration).toIso8601String(),
+  //   });
+  // }
 
   Future<bool> verifyOtpFromFirestore(String email, String enteredOtp) async {
     var userDoc = await _firestore.collection('Person').doc(email).get();
@@ -49,7 +59,7 @@ class AuthServices {
   // Update username
   Future<void> updateUsername(String email, String username) async {
     await _firestore
-        .collection('person')
+        .collection('Person')
         .doc(email)
         .update({'username': username});
   }
@@ -57,24 +67,45 @@ class AuthServices {
   // Simulate sending OTP
   Future<void> sendOtp(String email) async {
     try {
+      // Step 1: Generate the OTP and its expiry details
       OTPManager otpManager = OTPManager();
-      String otp = otpManager.generateOtp();
+      Map<String, String> generatedOtp =
+          otpManager.generateOtp(expiryDuration: const Duration(minutes: 2));
+      String otp = generatedOtp['otp']!;
+      String expiryTime = generatedOtp['expiryTime']!;
+
+      // Step 2: Send the OTP email
       bool result = await mailerConfig.sendMail(
         recipientEmail: email,
-        subject: "Your OTP for Login",
-        body: "Your OTP is $otp. It will expire in 2 minutes.",
+        subject: "[CariMakan-U] Verifikasi Kode OTP",
+        body: '''
+Halo!, 
+
+Kode OTP Anda adalah $otp. Masukkan kode ini untuk menyelesaikan proses verifikasi akun Anda. 
+
+⚠ Kode ini hanya berlaku selama 2 menit. Jangan bagikan kode ini kepada siapa pun, termasuk pihak yang mengaku dari CariMakan-U. ⚠
+
+Jika Anda tidak meminta kode ini, abaikan pesan ini. 
+
+Terima kasih telah menggunakan CariMakan-U!
+''',
       );
 
+      // Step 3: Handle email success and save the OTP to Firestore
       if (result) {
         if (kDebugMode) {
           print("OTP sent successfully");
         }
+
+        // Pass expiryTime as a string to Firestore
+        await saveOtpToFirestore(email, otp, expiryTime);
       } else {
         if (kDebugMode) {
           print("Failed to send OTP");
         }
       }
     } catch (e) {
+      // Step 4: Handle errors gracefully
       if (kDebugMode) {
         print("Error sending OTP: $e");
       }

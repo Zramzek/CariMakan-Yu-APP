@@ -22,7 +22,7 @@ class MailerConfig {
     required String body,
   }) async {
     final message = Message()
-      ..from = Address(dotenv.env['SMTP_USER']!, 'Your App Name')
+      ..from = Address(dotenv.env['SMTP_USER']!, 'CariMakanU')
       ..recipients.add(recipientEmail)
       ..subject = subject
       ..text = body;

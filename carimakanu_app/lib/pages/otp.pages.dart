@@ -1,4 +1,5 @@
 import 'package:carimakanu_app/services/auth.services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,7 +55,9 @@ class _OtpScreenState extends State<OtpScreen> {
     });
 
     try {
-      await _authServices.sendOtp(widget.email);
+      await _authServices.sendOtp(
+        widget.email,
+      );
       _showMessage("OTP has been resent to your email.");
     } catch (e) {
       _showMessage("Failed to resend OTP: $e");
@@ -66,14 +69,19 @@ class _OtpScreenState extends State<OtpScreen> {
         await _authServices.verifyOtpFromFirestore(email, enteredOtp);
 
     if (isValid) {
-      // OTP is valid
-      print('OTP verified successfully');
-      // Proceed to the next step (e.g., navigate to another page)
-      Navigator.pushNamed(context, '/welcome');
+      if (kDebugMode) {
+        print('OTP verified successfully');
+      }
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/welcome',
+        (route) => false,
+      );
     } else {
-      // OTP is invalid or expired
-      print('Invalid or expired OTP');
-      // Show an error message to the user
+      if (kDebugMode) {
+        print('Invalid or expired OTP');
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Invalid or expired OTP')),
       );
@@ -167,15 +175,10 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 24.0),
                 ElevatedButton(
                   onPressed: () {
-                    // Collect the entered OTP from the TextFormFields
-                    String enteredOtp =
-                        ''; // Combine the input from the 6 fields
+                    String enteredOtp = '';
                     for (var i = 0; i < 6; i++) {
-                      enteredOtp += _otpControllers[i]
-                          .text; // Assuming `_otpControllers` is a list of controllers
+                      enteredOtp += _otpControllers[i].text;
                     }
-
-                    // Call verifyOtp with the user's email and entered OTP
                     verifyOtp(widget.email, enteredOtp);
                   },
                   style: ElevatedButton.styleFrom(
