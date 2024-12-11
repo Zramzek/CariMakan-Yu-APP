@@ -1,4 +1,3 @@
-import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
 import 'package:carimakanu_app/pages/regis.pages.dart';
 import 'package:carimakanu_app/pages/welcome.pages.dart';
@@ -31,11 +30,11 @@ class MyApp extends StatelessWidget {
       routes: {
         '/auth': (context) => WelcomePage(email: "eggsyjaggsy@gmail.com"),
         '/auth/otp': (context) => OtpScreen(
-          email: ModalRoute.of(context)?.settings.arguments as String,
-        ),
+              email: ModalRoute.of(context)?.settings.arguments as String,
+            ),
         '/auth/register': (context) => RegisterScreen(
-          email: ModalRoute.of(context)?.settings.arguments as String,
-        ),
+              email: ModalRoute.of(context)?.settings.arguments as String,
+            ),
         '/welcome': (context) => WelcomePage(email: "eggsyjaggsy@gmail.com"),
       },
     );

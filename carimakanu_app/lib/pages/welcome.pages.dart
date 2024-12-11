@@ -1,24 +1,20 @@
-
 import 'package:carimakanu_app/pages/search.page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
-
-import 'package:carimakanu_app/pages/kedaiPage.dart';
+import 'package:carimakanu_app/pages/kedai.pages.dart';
 
 class WelcomePage extends StatefulWidget {
   final String email;
 
   const WelcomePage({super.key, required this.email});
 
-
   @override
-  State<WelcomePage> createState() => _welcomePageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _welcomePageState extends State<WelcomePage> {
+class _WelcomePageState extends State<WelcomePage> {
   String username = "";
 
   @override
@@ -30,12 +26,8 @@ class _welcomePageState extends State<WelcomePage> {
     }
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
@@ -50,7 +42,6 @@ class _welcomePageState extends State<WelcomePage> {
             const SizedBox(height: 20),
             AllProducts(),
             const SizedBox(height: 20),
-
           ],
         ),
         floatingActionButton: ListKedai(context),
@@ -64,12 +55,13 @@ class _welcomePageState extends State<WelcomePage> {
         // Navigate to KedaiPage
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const kedaiPage()),
+          MaterialPageRoute(builder: (context) => KedaiPage()),
         );
       },
       backgroundColor: Colors.transparent,
       elevation: 0,
-      child: SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
+      child:
+          SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
     );
   }
 
@@ -80,13 +72,13 @@ class _welcomePageState extends State<WelcomePage> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         image: DecorationImage(
-          colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
+          colorFilter:
+              ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
           image: AssetImage('assets/images/makanan.png'),
-          fit: BoxFit.cover, // Scale the image to cover the containershape: BoxShape.circle
+          fit: BoxFit
+              .cover, // Scale the image to cover the containershape: BoxShape.circle
         ),
-
       ),
-
       child: Center(
         child: Text(
           'CariMakan U',
@@ -95,12 +87,9 @@ class _welcomePageState extends State<WelcomePage> {
             fontFamily: 'Lexend',
             fontSize: 24,
             fontWeight: FontWeight.bold,
-
           ),
-
         ),
       ),
-
     );
   }
 
@@ -122,9 +111,7 @@ class _welcomePageState extends State<WelcomePage> {
             decorationColor: Colors.blue,
             decorationThickness: 2,
           ),
-        )
-
-    );
+        ));
   }
 
   Container _searchField(BuildContext context) {
@@ -144,7 +131,7 @@ class _welcomePageState extends State<WelcomePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>searchPage()),
+            MaterialPageRoute(builder: (context) => searchPage()),
           );
         },
         child: Container(
@@ -166,7 +153,6 @@ class _welcomePageState extends State<WelcomePage> {
                 padding: const EdgeInsets.all(4),
                 child: SvgPicture.asset('assets/icons/Search 02.svg'),
               ),
-
             ],
           ),
         ),
@@ -194,7 +180,6 @@ class _welcomePageState extends State<WelcomePage> {
     }
   }
 
-
   AppBar appBarWelcomePage() {
     return AppBar(
       backgroundColor: Colors.white,
@@ -221,7 +206,8 @@ class _welcomePageState extends State<WelcomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WelcomePage(email: FirebaseAuth.instance.currentUser?.email ?? ''),
+                  builder: (context) => WelcomePage(
+                      email: FirebaseAuth.instance.currentUser?.email ?? ''),
                 ),
               );
             },

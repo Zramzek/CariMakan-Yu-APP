@@ -1,8 +1,9 @@
+import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
 import 'package:carimakanu_app/pages/regis.pages.dart';
 import 'package:carimakanu_app/pages/welcome.pages.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:carimakanu_app/pages/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,19 +30,21 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
           primarySwatch: Colors.blue,
           textTheme: GoogleFonts.leagueSpartanTextTheme()),
-      initialRoute: '/auth',
+      initialRoute: '/',
       routes: {
+        '/': (context) => const SplashScreen(),
         '/auth': (context) => const LoginScreen(),
         '/auth/otp': (context) => OtpScreen(
-          email: ModalRoute.of(context)?.settings.arguments as String,
-        ),
+              email: ModalRoute.of(context)?.settings.arguments as String,
+            ),
         '/auth/register': (context) => RegisterScreen(
-          email: ModalRoute.of(context)?.settings.arguments as String,
-        ),
+              email: ModalRoute.of(context)?.settings.arguments as String,
+            ),
         '/welcome': (context) => WelcomePage(
-          email: ModalRoute.of(context)?.settings.arguments as String,
-        ),
-        },
+              email: ModalRoute.of(context)?.settings.arguments as String,
+            ),
+        '/welcome/kedai': (context) => KedaiPage(),
+      },
     );
   }
 }

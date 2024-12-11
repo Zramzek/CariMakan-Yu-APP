@@ -1,3 +1,4 @@
+import 'package:carimakanu_app/helpers/jwt.helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
 
@@ -37,12 +38,18 @@ class _LoginScreenState extends State<LoginScreen> {
         _showMessage('An unknown error occurred.');
       }
     } catch (e) {
-      _showMessage('Error: $e');
+      _showMessage('inikah errornya: $e');
     } finally {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  void loginUser(String email) async {
+    await JWTHelpers.generateToken(email);
+
+    Navigator.pushReplacementNamed(context, '/welcome');
   }
 
   void _showMessage(String message) {

@@ -1,27 +1,34 @@
+import 'dart:convert';
+
 import 'package:carimakanu_app/config/mailer.config.dart';
 import 'package:carimakanu_app/config/otp.config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:email_otp/email_otp.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 
 class AuthServices {
-  final EmailOTP emailOTP = EmailOTP();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final MailerConfig mailerConfig = MailerConfig(); // Initialize mailerConfig
+  final MailerConfig mailerConfig = MailerConfig();
 
-  // Check if the email is registered
   Future<String> checkEmailRegistration(String email) async {
     var userDoc = await _firestore.collection('Person').doc(email).get();
     return userDoc.exists ? 'registered' : 'unregistered';
   }
 
-  // Insert new user with email
+  Future<String> generateUserId(String email) async {
+    final bytes = utf8.encode(email);
+    final userid = sha256.convert(bytes).toString();
+    return userid;
+  }
+
   Future<void> insertEmail(String email) async {
+    final userId = await generateUserId(email);
     await _firestore.collection('Person').doc(email).set({
+      'userId': userId,
       'email': email,
-      'username': null, // Placeholder for username
-      'otp': null, // Placeholder for username
-      'otpExpiry': null, // Placeholder for username
+      'username': null,
+      'otp': null,
+      'otpExpiry': null,
       'created_at': FieldValue.serverTimestamp(),
     });
   }
@@ -42,7 +49,7 @@ class AuthServices {
     DateTime expiryTime = DateTime.parse(userDoc.data()?['otpExpiry'] ?? '');
 
     if (DateTime.now().isAfter(expiryTime)) {
-      return false; // OTP expired
+      return false;
     }
 
     return savedOtp == enteredOtp;
@@ -75,7 +82,7 @@ Halo!,
 
 Kode OTP Anda adalah $otp. Masukkan kode ini untuk menyelesaikan proses verifikasi akun Anda. 
 
-⚠ Kode ini hanya berlaku selama 2 menit. Jangan bagikan kode ini kepada siapa pun, termasuk pihak yang mengaku dari CariMakan-U. ⚠
+Kode ini hanya berlaku selama 2 menit. Jangan bagikan kode ini kepada siapa pun, termasuk pihak yang mengaku dari CariMakan-U.
 
 Jika Anda tidak meminta kode ini, abaikan pesan ini. 
 

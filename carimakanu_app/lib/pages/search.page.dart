@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:carimakanu_app/pages/welcome.pages.dart';
 
-
 class searchPage extends StatefulWidget {
   searchPage({super.key});
 
@@ -12,9 +11,6 @@ class searchPage extends StatefulWidget {
 }
 
 class _searchPageState extends State<searchPage> {
-
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,15 +19,15 @@ class _searchPageState extends State<searchPage> {
         appBar: appBarWelcomePage(),
         body: Column(
           children: [
-            _searchField(),  // This will remain fixed and won't scroll
-            Expanded(  // This will make the ListView take the remaining space
+            _searchField(), // This will remain fixed and won't scroll
+            Expanded(
+              // This will make the ListView take the remaining space
               child: ListView(
                 padding: EdgeInsets.all(16.0),
                 children: [
                   SizedBox(height: 5),
                   textFieldRFY(),
                   SizedBox(height: 20),
-
                   SizedBox(height: 20),
                 ],
               ),
@@ -42,38 +38,30 @@ class _searchPageState extends State<searchPage> {
     );
   }
 
-
   Text textFieldRFY() {
     return Text(
-              'Recommended for you',
-              style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'Lexend',
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-              ),
-            );
+      'Recommended for you',
+      style: TextStyle(
+        color: Colors.black,
+        fontFamily: 'Lexend',
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+    );
   }
-
-
-
-
 
   Container _searchField() {
     return Container(
       width: 400,
       margin: EdgeInsets.only(bottom: 5),
-      decoration: BoxDecoration(
-          boxShadow: [BoxShadow(
-              color: Colors.black.withOpacity(0.11),
-              blurRadius: 40,
-              spreadRadius: 0.0
-          )
-          ]
-      ),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+            color: Colors.black.withOpacity(0.11),
+            blurRadius: 40,
+            spreadRadius: 0.0)
+      ]),
       child: TextField(
         decoration: InputDecoration(
-
             filled: true,
             fillColor: Colors.white,
             contentPadding: EdgeInsets.all(15),
@@ -81,19 +69,15 @@ class _searchPageState extends State<searchPage> {
               padding: const EdgeInsets.all(4),
               child: SvgPicture.asset('assets/icons/Search 02.svg'),
             ),
-
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none
-            )
-        ),
+                borderSide: BorderSide.none)),
       ),
     );
   }
 
   AppBar appBarWelcomePage() {
     return AppBar(
-
       backgroundColor: Colors.white, // Background color of the AppBar
       elevation: 0, // Remove shadow
       toolbarHeight: 100.0,
@@ -106,12 +90,14 @@ class _searchPageState extends State<searchPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WelcomePage(email: FirebaseAuth.instance.currentUser?.email ?? ''),
-                ),              ); // Navigate back to the previous screen
+                  builder: (context) => WelcomePage(
+                      email: FirebaseAuth.instance.currentUser?.email ?? ''),
+                ),
+              ); // Navigate back to the previous screen
             },
-
             child: Container(
-              margin: EdgeInsets.only(right: 10), // Add some margin to separate it from the text
+              margin: EdgeInsets.only(
+                  right: 10), // Add some margin to separate it from the text
               child: SvgPicture.asset(
                 'assets/icons/tombol back.svg',
                 width: 55, // Adjust size as needed
@@ -132,5 +118,4 @@ class _searchPageState extends State<searchPage> {
       ),
     );
   }
-
 }
