@@ -20,21 +20,20 @@ class _searchPageState extends State<searchPage> {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBarWelcomePage(),
-        body: Column(
-          children: [
-              child: ListView(
-                padding: EdgeInsets.all(16.0),
-                children: [
-                  SizedBox(height: 5),
-                  textFieldRFY(),
-                  SizedBox(height: 20),
-
-                  SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ],
+        appBar: AppBar(
+          title: Text("Welcome Page"),
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: ListView(
+            children: [
+              SizedBox(height: 5),
+              textFieldRFY(),
+              SizedBox(height: 20),
+              // Add more widgets here if needed
+              SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -97,20 +96,15 @@ class _searchPageState extends State<searchPage> {
         children: [
           GestureDetector(
         onTap: () {
-      Navigator.pop(context);
     },
 
-
             child: Container(
-              margin: EdgeInsets.only(right: 10),
               child: SvgPicture.asset(
                 'assets/icons/tombol back.svg',
-                width: 55,
                 height: 54,
               ),
             ),
           ),
-
           Text(
             'Nikmati Rasa, \nTemukan Bahagia',
             style: TextStyle(

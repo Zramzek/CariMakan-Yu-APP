@@ -1,3 +1,6 @@
+import 'package:carimakanu_app/pages/search.page.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:carimakanu_app/model/kedai_list_view.dart';
@@ -159,7 +162,7 @@ class _welcomePageState extends State<WelcomePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) =>searchPage()),
+            MaterialPageRoute(builder: (context) => searchPage()),
           );
         },
         child: Container(
