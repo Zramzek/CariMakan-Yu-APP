@@ -28,19 +28,11 @@ class AuthServices {
 
   Future<void> saveOtpToFirestore(
       String email, String otp, String expiryTime) async {
-    await _firestore.collection('Person').doc(email).set({
+    await _firestore.collection('Person').doc(email).update({
       'otp': otp,
       'otpExpiry': expiryTime,
     });
   }
-
-  // Future<void> saveOtpToFirestore(
-  //     String email, String otp, Duration expiryDuration) async {
-  //   await _firestore.collection('Person').doc(email).set({
-  //     'otp': otp,
-  //     'otpExpiry': DateTime.now().add(expiryDuration).toIso8601String(),
-  //   });
-  // }
 
   Future<bool> verifyOtpFromFirestore(String email, String enteredOtp) async {
     var userDoc = await _firestore.collection('Person').doc(email).get();

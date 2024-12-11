@@ -15,15 +15,4 @@ class OTPManager {
       "expiryTime": _expiryTime!.toIso8601String(),
     };
   }
-
-  // Verify OTP and check expiration
-  bool verifyOtp(String enteredOtp) {
-    if (_otp == null || _expiryTime == null) {
-      return false; // OTP not set
-    }
-    if (DateTime.now().isAfter(_expiryTime!)) {
-      return false; // OTP expired
-    }
-    return _otp == enteredOtp; // Check if OTP matches
-  }
 }
