@@ -5,7 +5,6 @@ import 'package:carimakanu_app/pages/welcome.pages.dart';
 
 
 class searchPage extends StatefulWidget {
-
   searchPage({super.key});
 
   @override
@@ -24,8 +23,6 @@ class _searchPageState extends State<searchPage> {
         appBar: appBarWelcomePage(),
         body: Column(
           children: [
-            _searchField(),
-            Expanded(
               child: ListView(
                 padding: EdgeInsets.all(16.0),
                 children: [
@@ -95,13 +92,9 @@ class _searchPageState extends State<searchPage> {
   AppBar appBarWelcomePage() {
     return AppBar(
 
-      backgroundColor: Colors.white,
-      elevation: 0,
       toolbarHeight: 100.0,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-
           GestureDetector(
         onTap: () {
       Navigator.pop(context);
