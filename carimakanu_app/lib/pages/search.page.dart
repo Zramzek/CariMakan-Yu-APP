@@ -20,20 +20,22 @@ class _searchPageState extends State<searchPage> {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          title: Text("Welcome Page"),
-        ),
-        body: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: ListView(
-            children: [
-              SizedBox(height: 5),
-              textFieldRFY(),
-              SizedBox(height: 20),
-              // Add more widgets here if needed
-              SizedBox(height: 20),
-            ],
-          ),
+        appBar: appBarWelcomePage(),
+        body: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.all(16.0),
+                children: [
+                  SizedBox(height: 5),
+                  textFieldRFY(),
+                  SizedBox(height: 20),
+                  // Add more widgets here if needed
+                  SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -96,7 +98,9 @@ class _searchPageState extends State<searchPage> {
         children: [
           GestureDetector(
         onTap: () {
+      Navigator.pop(context); // Go back to the previous screen
     },
+
 
             child: Container(
               child: SvgPicture.asset(
