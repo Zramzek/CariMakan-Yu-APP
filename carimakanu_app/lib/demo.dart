@@ -2,7 +2,6 @@ import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
 import 'package:carimakanu_app/pages/regis.pages.dart';
 import 'package:carimakanu_app/pages/welcome.pages.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,7 +21,6 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My Flutter App',
@@ -31,17 +29,15 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.leagueSpartanTextTheme()),
       initialRoute: '/auth',
       routes: {
-        '/auth': (context) => const LoginScreen(),
+        '/auth': (context) => WelcomePage(email: "eggsyjaggsy@gmail.com"),
         '/auth/otp': (context) => OtpScreen(
           email: ModalRoute.of(context)?.settings.arguments as String,
         ),
         '/auth/register': (context) => RegisterScreen(
           email: ModalRoute.of(context)?.settings.arguments as String,
         ),
-        '/welcome': (context) => WelcomePage(
-          email: ModalRoute.of(context)?.settings.arguments as String,
-        ),
-        },
+        '/welcome': (context) => WelcomePage(email: "eggsyjaggsy@gmail.com"),
+      },
     );
   }
 }

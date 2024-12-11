@@ -76,6 +76,7 @@ class _OtpScreenState extends State<OtpScreen> {
         context,
         '/welcome',
         (route) => false,
+        arguments: email,
       );
     } else {
       if (kDebugMode) {

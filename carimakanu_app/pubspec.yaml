@@ -44,6 +44,7 @@ dependencies:
   email_otp: ^3.0.2
   http: ^1.2.2
   firebase_dynamic_links: ^6.0.11
+  flutter_svg: ^2.0.15
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +71,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/icons/
     - .env
     #   - images/a_dot_ham.jpeg
 
