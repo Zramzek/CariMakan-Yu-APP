@@ -1,9 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:carimakanu_app/helpers/jwt.helpers.dart'; // Import your AuthService or JWTHelpers
+import 'package:gap/gap.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
-
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -12,35 +12,53 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuth();
+    _navigateToHome();
   }
 
-  void _checkAuth() async {
-    final isValid =
-        await JWTHelpers.validateToken(); // Replace with JWTHelpers if needed
-    if (isValid) {
-      Navigator.pushReplacementNamed(
-          context, '/welcome'); // Redirect to Welcome Page
-    } else {
-      Navigator.pushReplacementNamed(
-          context, '/auth'); // Redirect to Login Page
+  _navigateToHome() async {
+    try {
+      await Future.delayed(const Duration(milliseconds: 3000), () {});
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/auth');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Navigation error: $e');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 150.0),
+          const Gap(100),
           Image.asset(
             'assets/images/logo.png',
+            width: 200,
           ),
-          const CircularProgressIndicator()
+          const Text(
+            'CariMakan-U',
+            style: TextStyle(
+              fontSize: 42,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          LoadingAnimationWidget.staggeredDotsWave(
+            color: Colors.grey,
+            size: 200,
+          ),
         ],
-      )), // Loading indicator
-    );
+      ),
+    ));
   }
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: SplashScreen(),
+  ));
 }

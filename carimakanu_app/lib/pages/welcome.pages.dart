@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:carimakanu_app/pages/kedai.pages.dart';
+// import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
+// import 'package:carimakanu_app/pages/kedai.pages.dart';
 
 class WelcomePage extends StatefulWidget {
   final String email;
@@ -11,10 +12,10 @@ class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key, required this.email});
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
+  State<WelcomePage> createState() => _welcomePageState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _welcomePageState extends State<WelcomePage> {
   String username = "";
 
   @override
@@ -42,6 +43,22 @@ class _WelcomePageState extends State<WelcomePage> {
             const SizedBox(height: 20),
             AllProducts(),
             const SizedBox(height: 20),
+            // SizedBox(
+            //   height: 300, // Set a height limit for the KedaiListView
+            //   child: KedaiListView(
+            //     onItemTap: (kedai) {
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => WelcomePage(
+            //             email: ModalRoute.of(context)?.settings.arguments
+            //                 as String,
+            //           ),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
           ],
         ),
         floatingActionButton: ListKedai(context),
@@ -53,10 +70,10 @@ class _WelcomePageState extends State<WelcomePage> {
     return FloatingActionButton(
       onPressed: () {
         // Navigate to KedaiPage
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => KedaiPage()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const KedaiPage()),
+        // );
       },
       backgroundColor: Colors.transparent,
       elevation: 0,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class KategoriModel {
+class KedaiModel {
   String name;
   String iconPath;
   Color boxColor;
@@ -10,7 +10,7 @@ class KategoriModel {
   int jumlah;
   String informasi;
 
-  KategoriModel({
+  KedaiModel({
     required this.name,
     required this.iconPath,
     required this.boxColor,
@@ -21,10 +21,10 @@ class KategoriModel {
     required this.informasi,
   });
 
-  static List<KategoriModel> getKategori() {
-    List<KategoriModel> kategori = [];
+  static List<KedaiModel> getKategori() {
+    List<KedaiModel> kategori = [];
 
-    kategori.add(KategoriModel(
+    kategori.add(KedaiModel(
         name: "Martabak Legit",
         iconPath: 'assets/icons/image 7.png',
         boxColor: Color(0xFFFFFFFF),
@@ -42,7 +42,7 @@ class KategoriModel {
             ' potenti. Donec sed velit dolor. '
             'Donec imperdiet lacinia mi euismod euismod. '
             'Praesent suscipit viverra sollicitudin. '));
-    kategori.add(KategoriModel(
+    kategori.add(KedaiModel(
         name: "Nasi Goreng Special",
         iconPath: 'assets/icons/image 5.png',
         Kategori: 'Aneka Makanan, Nasi Goreng',
@@ -60,7 +60,7 @@ class KategoriModel {
             ' potenti. Donec sed velit dolor. '
             'Donec imperdiet lacinia mi euismod euismod. '
             'Praesent suscipit viverra sollicitudin. '));
-    kategori.add(KategoriModel(
+    kategori.add(KedaiModel(
         name: "Mie Aceh Komplit",
         iconPath: 'assets/icons/image 6.png',
         Kategori: 'Aneka Makanan, Mie Kuah, Khas',
@@ -78,7 +78,7 @@ class KategoriModel {
             ' potenti. Donec sed velit dolor. '
             'Donec imperdiet lacinia mi euismod euismod. '
             'Praesent suscipit viverra sollicitudin. '));
-    kategori.add(KategoriModel(
+    kategori.add(KedaiModel(
         name: "Coffee",
         iconPath: 'assets/icons/Coffee Bean.svg',
         boxColor: Color(0xFFFFFFFF),

@@ -1,7 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:carimakanu_app/pages/welcome.pages.dart';
 
 class searchPage extends StatefulWidget {
   searchPage({super.key});
@@ -19,15 +17,14 @@ class _searchPageState extends State<searchPage> {
         appBar: appBarWelcomePage(),
         body: Column(
           children: [
-            _searchField(), // This will remain fixed and won't scroll
             Expanded(
-              // This will make the ListView take the remaining space
               child: ListView(
                 padding: EdgeInsets.all(16.0),
                 children: [
                   SizedBox(height: 5),
                   textFieldRFY(),
                   SizedBox(height: 20),
+                  // Add more widgets here if needed
                   SizedBox(height: 20),
                 ],
               ),
@@ -78,34 +75,20 @@ class _searchPageState extends State<searchPage> {
 
   AppBar appBarWelcomePage() {
     return AppBar(
-      backgroundColor: Colors.white, // Background color of the AppBar
-      elevation: 0, // Remove shadow
       toolbarHeight: 100.0,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
         children: [
-          // Back Button Icon
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WelcomePage(
-                      email: FirebaseAuth.instance.currentUser?.email ?? ''),
-                ),
-              ); // Navigate back to the previous screen
+              Navigator.pop(context); // Go back to the previous screen
             },
             child: Container(
-              margin: EdgeInsets.only(
-                  right: 10), // Add some margin to separate it from the text
               child: SvgPicture.asset(
                 'assets/icons/tombol back.svg',
-                width: 55, // Adjust size as needed
                 height: 54,
               ),
             ),
           ),
-          // Text beside the icon
           Text(
             'Nikmati Rasa, \nTemukan Bahagia',
             style: TextStyle(
