@@ -60,7 +60,7 @@ class _CariMakanuAPP extends State<MyApp> {
         '/welcome': (context) => WelcomePage(
               email: ModalRoute.of(context)?.settings.arguments as String,
             ),
-        '/welcome/kedai': (context) => KedaiPage(),
+        '/welcome/kedai': (context) => const KedaiPage(),
       },
     );
   }

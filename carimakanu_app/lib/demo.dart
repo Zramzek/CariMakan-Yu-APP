@@ -28,14 +28,15 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.leagueSpartanTextTheme()),
       initialRoute: '/auth',
       routes: {
-        '/auth': (context) => WelcomePage(email: "eggsyjaggsy@gmail.com"),
+        '/auth': (context) => const WelcomePage(email: "eggsyjaggsy@gmail.com"),
         '/auth/otp': (context) => OtpScreen(
               email: ModalRoute.of(context)?.settings.arguments as String,
             ),
         '/auth/register': (context) => RegisterScreen(
               email: ModalRoute.of(context)?.settings.arguments as String,
             ),
-        '/welcome': (context) => WelcomePage(email: "eggsyjaggsy@gmail.com"),
+        '/welcome': (context) =>
+            const WelcomePage(email: "eggsyjaggsy@gmail.com"),
       },
     );
   }

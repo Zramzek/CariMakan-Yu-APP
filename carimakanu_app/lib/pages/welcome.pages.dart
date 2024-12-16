@@ -1,10 +1,10 @@
+import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/search.page.dart';
+import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-// import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
-// import 'package:carimakanu_app/pages/kedai.pages.dart';
 
 class WelcomePage extends StatefulWidget {
   final String email;
@@ -43,22 +43,22 @@ class _welcomePageState extends State<WelcomePage> {
             const SizedBox(height: 20),
             AllProducts(),
             const SizedBox(height: 20),
-            // SizedBox(
-            //   height: 300, // Set a height limit for the KedaiListView
-            //   child: KedaiListView(
-            //     onItemTap: (kedai) {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => WelcomePage(
-            //             email: ModalRoute.of(context)?.settings.arguments
-            //                 as String,
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
+            SizedBox(
+              height: 300, // Set a height limit for the KedaiListView
+              child: KedaiListView(
+                onItemTap: (kedai) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WelcomePage(
+                        email: ModalRoute.of(context)?.settings.arguments
+                            as String,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
           ],
         ),
         floatingActionButton: ListKedai(context),
@@ -70,10 +70,10 @@ class _welcomePageState extends State<WelcomePage> {
     return FloatingActionButton(
       onPressed: () {
         // Navigate to KedaiPage
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const KedaiPage()),
-        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const KedaiPage()),
+        );
       },
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -91,12 +91,12 @@ class _welcomePageState extends State<WelcomePage> {
         image: DecorationImage(
           colorFilter:
               ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
-          image: AssetImage('assets/images/makanan.png'),
+          image: const AssetImage('assets/images/makanan.png'),
           fit: BoxFit
               .cover, // Scale the image to cover the containershape: BoxShape.circle
         ),
       ),
-      child: Center(
+      child: const Center(
         child: Text(
           'CariMakan U',
           style: TextStyle(
@@ -113,12 +113,12 @@ class _welcomePageState extends State<WelcomePage> {
   Container AllProducts() {
     return Container(
         width: 400,
-        padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: Color(0xffD32B28), // Warna latar belakang tombol
+          color: const Color(0xffD32B28), // Warna latar belakang tombol
           borderRadius: BorderRadius.circular(8), // Membuat sudut melengku
         ),
-        child: Text(
+        child: const Text(
           'Recommended for you',
           style: TextStyle(
             fontFamily: 'Lexend',
@@ -134,7 +134,7 @@ class _welcomePageState extends State<WelcomePage> {
   Container _searchField(BuildContext context) {
     return Container(
       width: 300,
-      margin: EdgeInsets.only(top: 30, bottom: 10),
+      margin: const EdgeInsets.only(top: 30, bottom: 10),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -152,7 +152,7 @@ class _welcomePageState extends State<WelcomePage> {
           );
         },
         child: Container(
-          padding: EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(30),
@@ -210,7 +210,7 @@ class _welcomePageState extends State<WelcomePage> {
             children: [
               Text(
                 'Selamat Datang,\n$username',
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Lexend',
                   fontWeight: FontWeight.bold,
                   fontSize: 24,

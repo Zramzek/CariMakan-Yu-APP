@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
 class searchPage extends StatefulWidget {
-  searchPage({super.key});
+  const searchPage({super.key});
 
   @override
   State<searchPage> createState() => _searchPageState();
@@ -19,13 +19,13 @@ class _searchPageState extends State<searchPage> {
           children: [
             Expanded(
               child: ListView(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 children: [
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   textFieldRFY(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   // Add more widgets here if needed
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -36,7 +36,7 @@ class _searchPageState extends State<searchPage> {
   }
 
   Text textFieldRFY() {
-    return Text(
+    return const Text(
       'Recommended for you',
       style: TextStyle(
         color: Colors.black,
@@ -50,7 +50,7 @@ class _searchPageState extends State<searchPage> {
   Container _searchField() {
     return Container(
       width: 400,
-      margin: EdgeInsets.only(bottom: 5),
+      margin: const EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(
             color: Colors.black.withOpacity(0.11),
@@ -61,7 +61,7 @@ class _searchPageState extends State<searchPage> {
         decoration: InputDecoration(
             filled: true,
             fillColor: Colors.white,
-            contentPadding: EdgeInsets.all(15),
+            contentPadding: const EdgeInsets.all(15),
             prefixIcon: Padding(
               padding: const EdgeInsets.all(4),
               child: SvgPicture.asset('assets/icons/Search 02.svg'),
@@ -89,7 +89,7 @@ class _searchPageState extends State<searchPage> {
               ),
             ),
           ),
-          Text(
+          const Text(
             'Nikmati Rasa, \nTemukan Bahagia',
             style: TextStyle(
               fontFamily: 'Lexend',

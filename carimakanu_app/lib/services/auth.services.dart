@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:carimakanu_app/config/mailer.config.dart';
 import 'package:carimakanu_app/config/otp.config.dart';
+// import 'package:carimakanu_app/models/person.models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
@@ -10,30 +10,62 @@ class AuthServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final MailerConfig mailerConfig = MailerConfig();
 
+  // Future<Person?> getPersonByEmail(String email) async {
+  //   try {
+  //     DocumentSnapshot doc =
+  //         await _firestore.collection('Person').doc(email).get();
+  //     if (doc.exists) {
+  //       return Person.fromFirestore(doc);
+  //     }
+  //     return null;
+  //   } catch (e) {
+  //     print('Error fetching person: $e');
+  //     return null;
+  //   }
+  // }
+
   Future<String> checkEmailRegistration(String email) async {
-    var userDoc = await _firestore.collection('Person').doc(email).get();
-    return userDoc.exists ? 'registered' : 'unregistered';
+    try {
+      var userDoc = await _firestore.collection('Person').doc(email).get();
+      return userDoc.exists ? 'registered' : 'unregistered';
+    } catch (e) {
+      print('Error checking email registration: $e');
+      return 'error';
+    }
   }
 
-  Future<String> generateUserId(String email) async {
-    String userid;
+  Future<String> generateidUser(String email) async {
+    String idUser;
     try {
       final bytes = utf8.encode(email);
-      userid = sha256.convert(bytes).toString();
+      idUser = sha256.convert(bytes).toString();
     } catch (e) {
-      userid = 'error';
+      idUser = 'error';
       print('Error generating userId: $e');
     }
-    return userid;
+    return idUser;
   }
+
+  // Future<void> createPerson(Person person) async {
+  //   Future<void> createPerson(Person person) async {
+  //     try {
+  //       await _firestore
+  //           .collection('Person')
+  //           .doc(person.email)
+  //           .set(person.toFirestore());
+  //     } catch (e) {
+  //       print('Error creating person: $e');
+  //     }
+  //   }
 
   Future<void> insertEmail(String email) async {
     try {
-      final userId = await generateUserId(email);
+      final idUser = await generateidUser(email);
       await _firestore.collection('Person').doc(email).set({
-        'userId': userId,
+        'idUser': idUser,
         'email': email,
         'username': null,
+        'hasKedai': false,
         'otp': null,
         'otpExpiry': null,
         'created_at': FieldValue.serverTimestamp(),
@@ -55,6 +87,27 @@ class AuthServices {
     }
   }
 
+  Future<void> updateOtp(String email) async {
+    try {
+      await _firestore.collection('Person').doc(email).update({
+        'otp': 0,
+        'otpExpiry': "Verified",
+      });
+    } catch (e) {
+      print('Error updating OTP: $e');
+    }
+  }
+
+  Future<void> updateRole(String idUser) async {
+    try {
+      await _firestore.collection('Person').doc(idUser).update({
+        'hasKedai': true,
+      });
+    } catch (e) {
+      print('Error updating role: $e');
+    }
+  }
+
   Future<bool> verifyOtpFromFirestore(String email, String enteredOtp) async {
     try {
       var userDoc = await _firestore.collection('Person').doc(email).get();
@@ -66,6 +119,8 @@ class AuthServices {
       if (DateTime.now().isAfter(expiryTime)) {
         return false;
       }
+
+      await updateOtp(email);
 
       return savedOtp == enteredOtp;
     } catch (e) {
@@ -86,17 +141,19 @@ class AuthServices {
     }
   }
 
-  // Simulate sending OTP
   Future<void> sendOtp(String email) async {
     try {
-      // Step 1: Generate the OTP and its expiry details
+      // Generate OTP
       OTPManager otpManager = OTPManager();
       Map<String, String> generatedOtp =
           otpManager.generateOtp(expiryDuration: const Duration(minutes: 2));
       String otp = generatedOtp['otp']!;
       String expiryTime = generatedOtp['expiryTime']!;
 
-      // Step 2: Send the OTP email
+      // Save the OTP to Firestore
+      await saveOtpToFirestore(email, otp, expiryTime);
+
+      // Send the OTP
       bool result = await mailerConfig.sendMail(
         recipientEmail: email,
         subject: "[CariMakan-U] Verifikasi Kode OTP",
@@ -113,21 +170,18 @@ Terima kasih telah menggunakan CariMakan-U!
 ''',
       );
 
-      // Step 3: Handle email success and save the OTP to Firestore
+      // Handling success scenario
       if (result) {
         if (kDebugMode) {
           print("OTP sent successfully");
         }
-
-        // Pass expiryTime as a string to Firestore
-        await saveOtpToFirestore(email, otp, expiryTime);
       } else {
         if (kDebugMode) {
           print("Failed to send OTP");
         }
       }
     } catch (e) {
-      // Step 4: Handle errors gracefully
+      // Handle error
       if (kDebugMode) {
         print("Error sending OTP: $e");
       }
