@@ -21,10 +21,10 @@ class _searchPageState extends State<searchPage> {
               child: ListView(
                 padding: EdgeInsets.all(16.0),
                 children: [
+                  _searchField(),
                   SizedBox(height: 5),
                   textFieldRFY(),
                   SizedBox(height: 20),
-                  // Add more widgets here if needed
                   SizedBox(height: 20),
                 ],
               ),
@@ -50,6 +50,7 @@ class _searchPageState extends State<searchPage> {
   Container _searchField() {
     return Container(
       width: 400,
+
       margin: EdgeInsets.only(bottom: 5),
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(

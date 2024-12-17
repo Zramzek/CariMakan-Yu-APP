@@ -1,10 +1,13 @@
 import 'package:carimakanu_app/pages/search.page.dart';
+import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 // import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
 // import 'package:carimakanu_app/pages/kedai.pages.dart';
+import 'package:carimakanu_app/pages/informasiKedai.dart';
+
 
 class WelcomePage extends StatefulWidget {
   final String email;
@@ -43,26 +46,29 @@ class _welcomePageState extends State<WelcomePage> {
             const SizedBox(height: 20),
             AllProducts(),
             const SizedBox(height: 20),
-            // SizedBox(
-            //   height: 300, // Set a height limit for the KedaiListView
-            //   child: KedaiListView(
-            //     onItemTap: (kedai) {
-            //       Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) => WelcomePage(
-            //             email: ModalRoute.of(context)?.settings.arguments
-            //                 as String,
-            //           ),
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // ),
+            SizedBox(
+              height: 300, // Set a height limit for the KedaiListView
+              child: buildKedaiListView(context),
+            ),
           ],
         ),
         floatingActionButton: ListKedai(context),
       ),
+    );
+  }
+
+  KedaiListView buildKedaiListView(BuildContext context) {
+    return KedaiListView(
+      onItemTap: (kedai) { // kedai is a KedaiModel object passed from the list
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => informasiKedai(
+              kedai: kedai, // Pass the tapped KedaiModel object directly
+            ),
+          ),
+        );
+      },
     );
   }
 
