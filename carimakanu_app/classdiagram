@@ -1,0 +1,207 @@
+@startuml
+set namespaceSeparator ::
+
+class "carimakanu_app::config::mailer.config.dart::MailerConfig" {
+  +SmtpServer smtpServer
+  +dynamic sendMail()
+}
+
+"carimakanu_app::config::mailer.config.dart::MailerConfig" o-- "mailer::smtp_server.dart::SmtpServer"
+
+class "carimakanu_app::config::otp.config.dart::OTPManager" {
+  -String? _otp
+  -DateTime? _expiryTime
+  +Map<String, String> generateOtp()
+}
+
+class "carimakanu_app::demo.dart::MyApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "carimakanu_app::demo.dart::MyApp"
+
+class "carimakanu_app::firebase_options.dart::DefaultFirebaseOptions" {
+  {static} +FirebaseOptions android
+  {static} +FirebaseOptions ios
+  {static} +FirebaseOptions currentPlatform
+}
+
+"carimakanu_app::firebase_options.dart::DefaultFirebaseOptions" o-- "firebase_core_platform_interface::firebase_core_platform_interface.dart::FirebaseOptions"
+
+class "carimakanu_app::helpers::jwt.helpers.dart::JWTHelpers" {
+  {static} -FlutterSecureStorage _storage
+  {static} -String? _secretKey
+  {static} +dynamic generateToken()
+  {static} +dynamic validateToken()
+}
+
+"carimakanu_app::helpers::jwt.helpers.dart::JWTHelpers" o-- "flutter_secure_storage::flutter_secure_storage.dart::FlutterSecureStorage"
+
+class "carimakanu_app::main.dart::MyApp" {
+  +State<MyApp> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::main.dart::MyApp"
+
+class "carimakanu_app::main.dart::_CariMakanuAPP" {
+  +void initState()
+  +void initialization()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::main.dart::_CariMakanuAPP"
+
+class "carimakanu_app::models::kedai.models.dart::KedaiModel" {
+  +String name
+  +String iconPath
+  +Color boxColor
+  +String alamat
+  +double rating
+  +String Kategori
+  +int jumlah
+  +String informasi
+  {static} +List<KedaiModel> getKategori()
+}
+
+"carimakanu_app::models::kedai.models.dart::KedaiModel" o-- "dart::ui::Color"
+
+class "carimakanu_app::pages::kedai.pages.dart::KedaiPage" {
+  +Widget build()
+  +AppBar appBar()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "carimakanu_app::pages::kedai.pages.dart::KedaiPage"
+
+class "carimakanu_app::pages::login.pages.dart::LoginScreen" {
+  +_LoginScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::pages::login.pages.dart::LoginScreen"
+
+class "carimakanu_app::pages::login.pages.dart::_LoginScreenState" {
+  -TextEditingController _emailController
+  +AuthServices authServices
+  -bool _isLoading
+  -dynamic _handleLogin()
+  +void loginUser()
+  -void _showMessage()
+  +Widget build()
+}
+
+"carimakanu_app::pages::login.pages.dart::_LoginScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"carimakanu_app::pages::login.pages.dart::_LoginScreenState" o-- "carimakanu_app::services::auth.services.dart::AuthServices"
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::pages::login.pages.dart::_LoginScreenState"
+
+class "carimakanu_app::pages::otp.pages.dart::OtpScreen" {
+  +String email
+  +_OtpScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::pages::otp.pages.dart::OtpScreen"
+
+class "carimakanu_app::pages::otp.pages.dart::_OtpScreenState" {
+  -Timer _timer
+  -int _remainingTime
+  -bool _isButtonDisabled
+  -AuthServices _authServices
+  -List<TextEditingController> _otpControllers
+  +void initState()
+  +void dispose()
+  -void _startTimer()
+  -void _resendOtp()
+  +void verifyOtp()
+  -void _showMessage()
+  +Widget build()
+}
+
+"carimakanu_app::pages::otp.pages.dart::_OtpScreenState" o-- "dart::async::Timer"
+"carimakanu_app::pages::otp.pages.dart::_OtpScreenState" o-- "carimakanu_app::services::auth.services.dart::AuthServices"
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::pages::otp.pages.dart::_OtpScreenState"
+
+class "carimakanu_app::pages::regis.pages.dart::RegisterScreen" {
+  +String email
+  +_RegisterScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::pages::regis.pages.dart::RegisterScreen"
+
+class "carimakanu_app::pages::regis.pages.dart::_RegisterScreenState" {
+  -TextEditingController _usernameController
+  +AuthServices authServices
+  -bool _isLoading
+  -dynamic _handleLogin()
+  -void _showMessage()
+  +Widget build()
+}
+
+"carimakanu_app::pages::regis.pages.dart::_RegisterScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"carimakanu_app::pages::regis.pages.dart::_RegisterScreenState" o-- "carimakanu_app::services::auth.services.dart::AuthServices"
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::pages::regis.pages.dart::_RegisterScreenState"
+
+class "carimakanu_app::pages::search.page.dart::searchPage" {
+  +State<searchPage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::pages::search.page.dart::searchPage"
+
+class "carimakanu_app::pages::search.page.dart::_searchPageState" {
+  +Widget build()
+  +Text textFieldRFY()
+  -Container _searchField()
+  +AppBar appBarWelcomePage()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::pages::search.page.dart::_searchPageState"
+
+class "carimakanu_app::pages::splashscreen.dart::SplashScreen" {
+  +_SplashScreenState createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::pages::splashscreen.dart::SplashScreen"
+
+class "carimakanu_app::pages::splashscreen.dart::_SplashScreenState" {
+  +void initState()
+  -dynamic _navigateToHome()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::pages::splashscreen.dart::_SplashScreenState"
+
+class "carimakanu_app::pages::welcome.pages.dart::WelcomePage" {
+  +String email
+  +State<WelcomePage> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "carimakanu_app::pages::welcome.pages.dart::WelcomePage"
+
+class "carimakanu_app::pages::welcome.pages.dart::_welcomePageState" {
+  +String username
+  +void initState()
+  +Widget build()
+  +FloatingActionButton ListKedai()
+  +Container imageCMU()
+  +Container AllProducts()
+  -Container _searchField()
+  +dynamic fetchUsername()
+  +AppBar appBarWelcomePage()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "carimakanu_app::pages::welcome.pages.dart::_welcomePageState"
+
+class "carimakanu_app::services::auth.services.dart::AuthServices" {
+  -FirebaseFirestore _firestore
+  +MailerConfig mailerConfig
+  +dynamic checkEmailRegistration()
+  +dynamic generateUserId()
+  +dynamic insertEmail()
+  +dynamic saveOtpToFirestore()
+  +dynamic verifyOtpFromFirestore()
+  +dynamic updateUsername()
+  +dynamic sendOtp()
+}
+
+"carimakanu_app::services::auth.services.dart::AuthServices" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"carimakanu_app::services::auth.services.dart::AuthServices" o-- "carimakanu_app::config::mailer.config.dart::MailerConfig"
+
+
+@enduml
