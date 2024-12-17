@@ -1,10 +1,13 @@
 import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/search.page.dart';
 import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
+import 'package:carimakanu_app/widgets/logout.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomePage extends StatefulWidget {
   final String email;
@@ -21,9 +24,9 @@ class _welcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
-    String email = widget.email; // Get the passed email
+    String email = widget.email;
     if (email.isNotEmpty) {
-      fetchUsername(email); // Fetch the username from Firestore
+      fetchUsername(email);
     }
   }
 
@@ -44,7 +47,7 @@ class _welcomePageState extends State<WelcomePage> {
             AllProducts(),
             const SizedBox(height: 20),
             SizedBox(
-              height: 300, // Set a height limit for the KedaiListView
+              height: 300,
               child: KedaiListView(
                 onItemTap: (kedai) {
                   Navigator.push(
@@ -229,6 +232,14 @@ class _welcomePageState extends State<WelcomePage> {
               );
             },
             child: SvgPicture.asset('assets/icons/User Profile Circle.svg'),
+          ),
+          LogoutButton(
+            onLogout: () async {
+              final SharedPreferences prefs =
+                  await SharedPreferences.getInstance();
+              prefs.remove('email');
+              Get.toNamed('/auth');
+            },
           ),
         ],
       ),
