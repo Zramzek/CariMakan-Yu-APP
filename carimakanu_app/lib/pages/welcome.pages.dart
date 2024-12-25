@@ -1,32 +1,43 @@
 import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/search.page.dart';
+import 'package:carimakanu_app/services/auth.services.dart';
+import 'package:carimakanu_app/services/person.services.dart';
 import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
 import 'package:carimakanu_app/widgets/logout.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomePage extends StatefulWidget {
-  final String email;
-
-  const WelcomePage({super.key, required this.email});
+  const WelcomePage({super.key});
 
   @override
   State<WelcomePage> createState() => _welcomePageState();
 }
 
 class _welcomePageState extends State<WelcomePage> {
-  String username = "";
+  final AuthServices _authServices = AuthServices();
+  final PersonServices _personServices = PersonServices();
+  String username = '';
+  String email = '';
 
   @override
   void initState() {
     super.initState();
-    String email = widget.email;
-    if (email.isNotEmpty) {
-      fetchUsername(email);
+    isSessionValid();
+  }
+
+  void isSessionValid() async {
+    if (await _authServices.validateSession() == false) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/auth',
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      email = await _personServices.getEmailFromJWT() ?? '';
     }
   }
 
@@ -53,10 +64,7 @@ class _welcomePageState extends State<WelcomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WelcomePage(
-                        email: ModalRoute.of(context)?.settings.arguments
-                            as String,
-                      ),
+                      builder: (context) => WelcomePage(),
                     ),
                   );
                 },
@@ -226,8 +234,7 @@ class _welcomePageState extends State<WelcomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => WelcomePage(
-                      email: FirebaseAuth.instance.currentUser?.email ?? ''),
+                  builder: (context) => WelcomePage(),
                 ),
               );
             },

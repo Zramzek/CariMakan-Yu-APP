@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class KedaiListView extends StatelessWidget {
-  final Function(KedaiItem) onItemTap;
+  final Function(Kedai) onItemTap;
 
   const KedaiListView({super.key, required this.onItemTap});
 
@@ -22,9 +22,8 @@ class KedaiListView extends StatelessWidget {
           return const Center(child: Text('No data available'));
         }
 
-        final kedaiList = snapshot.data!.docs
-            .map((doc) => KedaiItem.fromFirestore(doc))
-            .toList();
+        final kedaiList =
+            snapshot.data!.docs.map((doc) => Kedai.fromFirestore(doc)).toList();
 
         return ListView.separated(
           itemCount: kedaiList.length,

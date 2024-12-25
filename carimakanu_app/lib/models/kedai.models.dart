@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class KedaiItem {
+class Kedai {
+  // static Future<List<Kedai>?> getKedaiRekomendasi() async {
+  //   try{
+  //     final listKedai = await FirebaseFirestore.instance
+  //         .collection('Kedai')
+  //         .where('rating', isGreaterThan: 4.5)
+  //         .orderBy('rating', descending: true)
+  //         .get();
+  //     return listKedai.docs.map((doc) => Kedai.fromJson(doc.data())).toList();
+
+  //   }
+  // }
   final String name;
   final String kategori;
   final String iconPath;
@@ -9,7 +20,7 @@ class KedaiItem {
   final double rating;
   final int jumlahRating;
 
-  KedaiItem({
+  Kedai({
     required this.name,
     required this.kategori,
     required this.iconPath,
@@ -18,9 +29,9 @@ class KedaiItem {
     required this.jumlahRating,
   });
 
-  factory KedaiItem.fromFirestore(DocumentSnapshot doc) {
+  factory Kedai.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    return KedaiItem(
+    return Kedai(
       name: data['name'] ?? '',
       kategori: data['kategori'] ?? '',
       iconPath: data['iconPath'] ?? '',
@@ -55,7 +66,7 @@ class KedaiScreen extends StatelessWidget {
             }
 
             final KedaiList = snapshot.data!.docs
-                .map((doc) => KedaiItem.fromFirestore(doc))
+                .map((doc) => Kedai.fromFirestore(doc))
                 .toList();
 
             return ListView.separated(
@@ -193,7 +204,7 @@ class KedaiScreen extends StatelessWidget {
 }
 
 class InformasiKedai extends StatelessWidget {
-  final KedaiItem kedai;
+  final Kedai kedai;
 
   const InformasiKedai({super.key, required this.kedai});
 

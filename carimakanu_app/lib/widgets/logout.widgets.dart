@@ -1,25 +1,57 @@
+import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LogoutButton extends StatelessWidget {
   final VoidCallback onLogout;
 
-  LogoutButton({required this.onLogout});
+  const LogoutButton({super.key, required this.onLogout});
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      child: Text('Logout'),
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
         backgroundColor: Colors.red,
       ),
       onPressed: () async {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.remove('email');
-        Get.toNamed('/auth');
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            actions: [
+              TextButton(
+                style: TextButton.styleFrom(
+                  iconColor: Colors.red,
+                  textStyle: const TextStyle(color: Colors.white),
+                ),
+                onPressed: () {
+                  final AuthServices authServices = AuthServices();
+                  authServices.deleteSession();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/auth',
+                    (Route<dynamic> route) => false,
+                  );
+                },
+                child: const Text('Keluar'),
+              ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  iconColor: Colors.white,
+                  textStyle: const TextStyle(color: Colors.red),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Batal'),
+              ),
+            ],
+            title: const Text('Konfirmasi Logout'),
+            contentPadding: const EdgeInsets.all(20),
+            content: const Text('Apakah Anda yakin ingin keluar?'),
+          ),
+        );
       },
+      child: Text('Logout'),
     );
   }
 }

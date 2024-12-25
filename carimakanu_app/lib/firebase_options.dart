@@ -66,5 +66,4 @@ class DefaultFirebaseOptions {
     iosClientId: '227879121795-kb907bp5dl45688ijeq8p48b9nq8iqh0.apps.googleusercontent.com',
     iosBundleId: 'com.example.carimakanuApp',
   );
-
 }

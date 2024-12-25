@@ -1,3 +1,4 @@
+import 'package:carimakanu_app/helpers/jwt.helpers.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -69,6 +70,8 @@ class _OtpScreenState extends State<OtpScreen> {
         await _authServices.verifyOtpFromFirestore(email, enteredOtp);
 
     if (isValid) {
+      final token = await JWTHelpers.generateToken(email);
+      await _authServices.saveSession(token, email);
       if (kDebugMode) {
         print('OTP verified successfully');
       }

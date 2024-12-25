@@ -3,6 +3,7 @@ import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
 import 'package:carimakanu_app/pages/regis.pages.dart';
 import 'package:carimakanu_app/pages/welcome.pages.dart';
+import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,11 +18,15 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  final AuthServices _authServices = AuthServices();
+  final isValidSession = await _authServices.validateSession();
+  FlutterNativeSplash.remove();
+  runApp(MyApp(isValidSession: isValidSession));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  final bool isValidSession;
+  const MyApp({super.key, required this.isValidSession});
 
   @override
   State<MyApp> createState() => _CariMakanuAPP();
@@ -31,14 +36,6 @@ class _CariMakanuAPP extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initialization();
-  }
-
-  void initialization() async {
-    print('pausing...');
-    await Future.delayed(const Duration(seconds: 3));
-    print('unpausing...');
-    FlutterNativeSplash.remove();
   }
 
   @override
@@ -48,7 +45,7 @@ class _CariMakanuAPP extends State<MyApp> {
       theme: ThemeData(
           primarySwatch: Colors.blue,
           textTheme: GoogleFonts.leagueSpartanTextTheme()),
-      initialRoute: '/auth',
+      initialRoute: widget.isValidSession == true ? '/welcome' : '/auth',
       routes: {
         '/auth': (context) => const LoginScreen(),
         '/auth/otp': (context) => OtpScreen(
@@ -57,9 +54,7 @@ class _CariMakanuAPP extends State<MyApp> {
         '/auth/register': (context) => RegisterScreen(
               email: ModalRoute.of(context)?.settings.arguments as String,
             ),
-        '/welcome': (context) => WelcomePage(
-              email: ModalRoute.of(context)?.settings.arguments as String,
-            ),
+        '/welcome': (context) => WelcomePage(),
         '/welcome/kedai': (context) => const KedaiPage(),
       },
     );

@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:carimakanu_app/config/mailer.config.dart';
 import 'package:carimakanu_app/config/otp.config.dart';
-// import 'package:carimakanu_app/models/person.models.dart';
+import 'package:carimakanu_app/helpers/jwt.helpers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final MailerConfig mailerConfig = MailerConfig();
+  final storage = FlutterSecureStorage();
 
   // Future<Person?> getPersonByEmail(String email) async {
   //   try {
@@ -185,6 +187,51 @@ Terima kasih telah menggunakan CariMakan-U!
       if (kDebugMode) {
         print("Error sending OTP: $e");
       }
+    }
+  }
+
+  Future<void> saveSession(String token, String email) async {
+    try {
+      final currentTime = DateTime.now().toIso8601String();
+      await storage.write(key: 'sessionToken', value: token);
+      await storage.write(key: 'email', value: email);
+      await storage.write(key: 'lastAccessTime', value: currentTime);
+    } catch (e) {
+      print('Error saving session: $e');
+    }
+  }
+
+  Future<bool> validateSession() async {
+    try {
+      final lastAccess = storage.read(key: 'lastAccessTime');
+
+      final lastAccessDate = DateTime.parse(lastAccess as String);
+      final currentTime = DateTime.now();
+
+      if (currentTime.difference(lastAccessDate).inDays > 10) {
+        storage.deleteAll();
+        return false;
+      }
+
+      if (JWTHelpers.validateToken() == false) {
+        storage.deleteAll();
+        return false;
+      }
+
+      storage.write(
+          key: 'lastAccessTime', value: currentTime.toIso8601String());
+      return true;
+    } catch (e) {
+      print('Error validating session: $e');
+      return false;
+    }
+  }
+
+  Future<void> deleteSession() async {
+    try {
+      await storage.deleteAll();
+    } catch (e) {
+      print('Error deleting session: $e');
     }
   }
 }
