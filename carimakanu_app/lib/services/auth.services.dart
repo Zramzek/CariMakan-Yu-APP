@@ -203,23 +203,31 @@ Terima kasih telah menggunakan CariMakan-U!
 
   Future<bool> validateSession() async {
     try {
-      final lastAccess = storage.read(key: 'lastAccessTime');
+      final lastAccess = await storage.read(
+          key: 'lastAccessTime'); // Await the Future
 
-      final lastAccessDate = DateTime.parse(lastAccess as String);
+      if (lastAccess == null) {
+        // Handle the case when there is no lastAccessTime stored
+        return false;
+      }
+
+      final lastAccessDate = DateTime.parse(lastAccess);
       final currentTime = DateTime.now();
 
-      if (currentTime.difference(lastAccessDate).inDays > 10) {
-        storage.deleteAll();
+      if (currentTime
+          .difference(lastAccessDate)
+          .inDays > 10) {
+        await storage.deleteAll(); // Ensure this is awaited
         return false;
       }
 
       if (JWTHelpers.validateToken() == false) {
-        storage.deleteAll();
+        await storage.deleteAll(); // Ensure this is awaited
         return false;
       }
 
-      storage.write(
-          key: 'lastAccessTime', value: currentTime.toIso8601String());
+      await storage.write(key: 'lastAccessTime',
+          value: currentTime.toIso8601String()); // Ensure this is awaited
       return true;
     } catch (e) {
       print('Error validating session: $e');

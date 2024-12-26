@@ -4,9 +4,9 @@ class PersonServices {
   final storage = FlutterSecureStorage();
 
   Future<String?> getEmailFromJWT() async {
-    final email = storage.read(key: 'email');
+    final email = await storage.read(key: 'email');
     if (email == '') {
-      return '';
+      return null; // Returning null instead of an empty string to handle the case where email is not found
     } else {
       return email;
     }

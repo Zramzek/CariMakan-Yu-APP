@@ -34,10 +34,11 @@ class _welcomePageState extends State<WelcomePage> {
       Navigator.pushNamedAndRemoveUntil(
         context,
         '/auth',
-        (Route<dynamic> route) => false,
+            (Route<dynamic> route) => false,
       );
     } else {
-      email = await _personServices.getEmailFromJWT() ?? '';
+      String? emailFromJWT = await _personServices.getEmailFromJWT();  // Await the future
+      email = emailFromJWT ?? '';  // If null, assign an empty string
     }
   }
 
