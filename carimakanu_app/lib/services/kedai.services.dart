@@ -19,17 +19,29 @@ class KedaiServices {
     return idKedai;
   }
 
-  Future<void> addKedaitoFirestore(String idUser, String namaKedai,
-      String kategori, String iconPath, String alamat) async {
+  Future<void> addKedaitoFirestore(
+    String idUser,
+    String namaKedai,
+    String informasi,
+    String kategori,
+    String subKategori,
+    String iconPath,
+    String alamat,
+  ) async {
     try {
       final idKedai = await generateidKedai(namaKedai);
       await _firestore.collection('Kedai').doc(idKedai).set({
+        'idKedai': idKedai,
+        'idUser': idUser,
         'namaKedai': namaKedai,
+        'informasi': informasi,
         'kategori': kategori,
+        'subkategori': subKategori,
         'iconPath': iconPath,
         'alamat': alamat,
         'rating': 0,
         'jumlahRating': 0,
+        'created_at': FieldValue.serverTimestamp(),
       });
       print('Success adding kedai to Firestore');
       await _authServices.updateRole(idUser);

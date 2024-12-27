@@ -2,9 +2,7 @@ import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:flutter/material.dart';
 
 class LogoutButton extends StatelessWidget {
-  final VoidCallback onLogout;
-
-  const LogoutButton({super.key, required this.onLogout});
+  const LogoutButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +18,7 @@ class LogoutButton extends StatelessWidget {
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  iconColor: Colors.red,
-                  textStyle: const TextStyle(color: Colors.white),
+                  textStyle: const TextStyle(color: Colors.red),
                 ),
                 onPressed: () {
                   final AuthServices authServices = AuthServices();
@@ -36,7 +33,6 @@ class LogoutButton extends StatelessWidget {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  iconColor: Colors.white,
                   textStyle: const TextStyle(color: Colors.red),
                 ),
                 onPressed: () {
@@ -51,7 +47,7 @@ class LogoutButton extends StatelessWidget {
           ),
         );
       },
-      child: Text('Logout'),
+      child: const Text('Logout'),
     );
   }
 }

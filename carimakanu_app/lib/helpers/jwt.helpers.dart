@@ -17,11 +17,21 @@ class JWTHelpers {
 
   static Future<bool> validateToken() async {
     try {
-      final token = await _storage.read(key: "token");
-      if (token == null) return false;
+      final token = await _storage.read(key: 'sessionToken');
+      if (token == null) {
+        if (kDebugMode) {
+          print("Token is null");
+        }
+        return false;
+      }
 
       final jwt = JWT.verify(token, SecretKey(_secretKey!));
-      if (jwt.payload['email'] == null) return false;
+      if (jwt.payload['email'] == null) {
+        if (kDebugMode) {
+          print("Email is null");
+        }
+        return false;
+      }
 
       return true;
     } catch (e) {

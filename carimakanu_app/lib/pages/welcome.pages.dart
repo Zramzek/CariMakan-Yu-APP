@@ -7,21 +7,21 @@ import 'package:carimakanu_app/widgets/logout.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
 
   @override
-  State<WelcomePage> createState() => _welcomePageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _welcomePageState extends State<WelcomePage> {
+class _WelcomePageState extends State<WelcomePage> {
   final AuthServices _authServices = AuthServices();
   final PersonServices _personServices = PersonServices();
-  String username = '';
+
+  String? username = '';
   String email = '';
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -37,7 +37,34 @@ class _welcomePageState extends State<WelcomePage> {
         (Route<dynamic> route) => false,
       );
     } else {
-      email = await _personServices.getEmailFromJWT() ?? '';
+      String? emailFromJWT = await _personServices.getEmailFromJWT();
+      email = emailFromJWT ?? '';
+      print('Email from JWT: $email');
+      await fetchUsername(email);
+    }
+  }
+
+  Future<void> fetchUsername(String email) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Person')
+          .doc(email)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          username = userDoc['username'];
+          isLoading = false;
+        });
+      } else {
+        throw Exception('User document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+      setState(() {
+        username = 'Guest'; // Fallback in case of errors
+        isLoading = false;
+      });
     }
   }
 
@@ -72,15 +99,14 @@ class _welcomePageState extends State<WelcomePage> {
             ),
           ],
         ),
-        floatingActionButton: ListKedai(context),
+        floatingActionButton: buildKedaiButton(context),
       ),
     );
   }
 
-  FloatingActionButton ListKedai(BuildContext context) {
+  FloatingActionButton buildKedaiButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        // Navigate to KedaiPage
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const KedaiPage()),
@@ -88,8 +114,7 @@ class _welcomePageState extends State<WelcomePage> {
       },
       backgroundColor: Colors.transparent,
       elevation: 0,
-      child:
-          SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
+      child: SvgPicture.asset('assets/icons/Group 5.svg'),
     );
   }
 
@@ -103,8 +128,7 @@ class _welcomePageState extends State<WelcomePage> {
           colorFilter:
               ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
           image: const AssetImage('assets/images/makanan.png'),
-          fit: BoxFit
-              .cover, // Scale the image to cover the containershape: BoxShape.circle
+          fit: BoxFit.cover,
         ),
       ),
       child: const Center(
@@ -123,23 +147,22 @@ class _welcomePageState extends State<WelcomePage> {
 
   Container AllProducts() {
     return Container(
-        width: 400,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        decoration: BoxDecoration(
-          color: const Color(0xffD32B28), // Warna latar belakang tombol
-          borderRadius: BorderRadius.circular(8), // Membuat sudut melengku
+      width: 400,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xffD32B28),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Text(
+        'Recommended for you',
+        style: TextStyle(
+          fontFamily: 'Lexend',
+          color: Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
-        child: const Text(
-          'Recommended for you',
-          style: TextStyle(
-            fontFamily: 'Lexend',
-            color: Colors.white,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            decorationColor: Colors.blue,
-            decorationThickness: 2,
-          ),
-        ));
+      ),
+    );
   }
 
   Container _searchField(BuildContext context) {
@@ -181,31 +204,12 @@ class _welcomePageState extends State<WelcomePage> {
                 padding: const EdgeInsets.all(4),
                 child: SvgPicture.asset('assets/icons/Search 02.svg'),
               ),
+              const Text('Search...'), // Placeholder text
             ],
           ),
         ),
       ),
     );
-  }
-
-  Future<void> fetchUsername(String userId) async {
-    try {
-      // Fetch the user document from Firestore
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('Person')
-          .doc(userId)
-          .get();
-
-      // Extract the username and update the state
-      setState(() {
-        username = userDoc['username'] ?? 'Guest';
-      });
-    } catch (e) {
-      print('Error fetching username: $e');
-      setState(() {
-        username = 'Guest'; // Fallback in case of error
-      });
-    }
   }
 
   AppBar appBarWelcomePage() {
@@ -240,14 +244,7 @@ class _welcomePageState extends State<WelcomePage> {
             },
             child: SvgPicture.asset('assets/icons/User Profile Circle.svg'),
           ),
-          LogoutButton(
-            onLogout: () async {
-              final SharedPreferences prefs =
-                  await SharedPreferences.getInstance();
-              prefs.remove('email');
-              Get.toNamed('/auth');
-            },
-          ),
+          LogoutButton(),
         ],
       ),
     );

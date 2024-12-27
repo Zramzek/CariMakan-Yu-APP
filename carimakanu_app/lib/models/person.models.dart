@@ -1,39 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Person {
-  final String idUser;
-  final String username;
-  final String email;
-  final bool hasKedai;
+  String email;
+  String idUser;
+  String? username;
+  bool hasKedai;
+  String? otp;
+  String? otpExpiry;
+  DateTime? createdAt;
 
   Person({
-    required this.idUser,
-    required this.username,
     required this.email,
-    required this.hasKedai,
+    required this.idUser,
+    this.username,
+    this.hasKedai = false,
+    this.otp,
+    this.otpExpiry,
+    this.createdAt,
   });
 
-  factory Person.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Person(
-      idUser: data['idUser'] ?? '',
-      username: data['username'] ?? '',
-      email: data['email'] ?? '',
-      hasKedai: data['hasKedai'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'idUser': idUser,
-      'username': username,
+      'idUser ': idUser,
       'email': email,
+      'username': username,
       'hasKedai': hasKedai,
+      'otp': otp,
+      'otpExpiry': otpExpiry,
+      'created_at': createdAt ?? FieldValue.serverTimestamp(),
     };
   }
 
-  @override
-  String toString() {
-    return 'Person{idUser: $idUser, username: $username, email: $email, hasKedai: $hasKedai}';
+  static Person fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Person(
+      email: data['email'],
+      idUser: data['idUser'],
+      username: data['username'],
+      hasKedai: data['hasKedai'],
+      otp: data['otp'],
+      otpExpiry: data['otpExpiry'],
+      createdAt: (data['created_at'] as Timestamp).toDate(),
+    );
   }
 }
