@@ -17,7 +17,7 @@ class JWTHelpers {
 
   static Future<bool> validateToken() async {
     try {
-      final token = await _storage.read(key: "token");
+      final token = await _storage.read(key: "sessionToken");
       if (token == null) return false;
 
       final jwt = JWT.verify(token, SecretKey(_secretKey!));

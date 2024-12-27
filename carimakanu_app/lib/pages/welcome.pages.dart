@@ -1,17 +1,22 @@
 import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/search.page.dart';
+import 'package:carimakanu_app/pages/informasikedai.pages.dart';
+import 'package:carimakanu_app/pages/profile.pages.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:carimakanu_app/services/person.services.dart';
 import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
 import 'package:carimakanu_app/widgets/logout.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomePage extends StatefulWidget {
-  const WelcomePage({super.key});
+  final String email;
+
+  const WelcomePage({super.key, required this.email});
 
   @override
   State<WelcomePage> createState() => _welcomePageState();
@@ -26,7 +31,12 @@ class _welcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
+    String email = widget.email; // Get the passed email
+    if (email.isNotEmpty) {
+      fetchUsername(email); // Fetch the username from Firestore
+    }
     isSessionValid();
+
   }
 
   void isSessionValid() async {
@@ -59,17 +69,9 @@ class _welcomePageState extends State<WelcomePage> {
             AllProducts(),
             const SizedBox(height: 20),
             SizedBox(
-              height: 300,
-              child: KedaiListView(
-                onItemTap: (kedai) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WelcomePage(),
-                    ),
-                  );
-                },
-              ),
+
+              height: 600, // Set a height limit for the KedaiListView
+              child: buildKedaiListView(context),
             ),
           ],
         ),
@@ -91,6 +93,21 @@ class _welcomePageState extends State<WelcomePage> {
       elevation: 0,
       child:
           SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
+    );
+  }
+
+  KedaiListView buildKedaiListView(BuildContext context) {
+    return KedaiListView(
+      onItemTap: (kedai) { // kedai is a KedaiModel object passed from the list
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => informasiKedai(
+              kedai: kedai, // Pass the tapped KedaiModel object directly
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -189,6 +206,59 @@ class _welcomePageState extends State<WelcomePage> {
     );
   }
 
+  void showProfileDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.account_circle,
+                  size: 80,
+                  color: Colors.red,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Zaidan Rasyid',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  'zaidan.rsy145@gmail.com',
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                LogoutButton(
+                  onLogout: () async {
+                    final SharedPreferences prefs =
+                    await SharedPreferences.getInstance();
+                    prefs.remove('email');
+                    // Navigate to the auth page (e.g., login screen)
+                    Get.toNamed('/auth');
+                    Navigator.pop(context); // Close the profile dialog after logout
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
   Future<void> fetchUsername(String userId) async {
     try {
       // Fetch the user document from Firestore
@@ -232,22 +302,14 @@ class _welcomePageState extends State<WelcomePage> {
           ),
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WelcomePage(),
-                ),
-              );
+              // Menampilkan popup ProfilePage
+              showProfileDialog(context);
             },
-            child: SvgPicture.asset('assets/icons/User Profile Circle.svg'),
-          ),
-          LogoutButton(
-            onLogout: () async {
-              final SharedPreferences prefs =
-                  await SharedPreferences.getInstance();
-              prefs.remove('email');
-              Get.toNamed('/auth');
-            },
+            child: SvgPicture.asset(
+              'assets/icons/User Profile Circle.svg',
+              height: 48,
+              width: 48,
+            ),
           ),
         ],
       ),

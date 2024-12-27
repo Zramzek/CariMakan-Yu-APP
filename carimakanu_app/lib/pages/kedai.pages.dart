@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:carimakanu_app/form/daftar.kedai.dart';
+
 
 class KedaiPage extends StatefulWidget {
   const KedaiPage({super.key});
@@ -27,22 +29,32 @@ class _KedaiPageState extends State<KedaiPage> {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.grey),
                 ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add_circle_outline,
-                          size: 40, color: Colors.red),
-                      SizedBox(height: 4),
-                      Text("Add Kedai",
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => TambahInformasiScreen()),
+                      );
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_circle_outline, size: 40, color: Colors.red),
+                        SizedBox(height: 4),
+                        Text(
+                          "Add Kedai",
                           style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Lexend',
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold)),
-                    ],
+                            fontSize: 16,
+                            fontFamily: 'Lexend',
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                )
               ),
             ),
           ),
@@ -95,6 +107,67 @@ class _KedaiPageState extends State<KedaiPage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddKedaiForm(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (BuildContext context) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: MediaQuery
+                  .of(context)
+                  .viewInsets
+                  .bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Tambah Kedai Baru',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Nama Kedai',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Lokasi Kedai',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Nomor Telepon',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    // Logika untuk menyimpan data kedai
+                    Navigator.pop(context);
+                  },
+                  child: Text('Simpan'),
+                ),
+              ],
+            ),
+          );
+        }
     );
   }
 

@@ -49,12 +49,11 @@ class _CariMakanuAPP extends State<MyApp> {
       routes: {
         '/auth': (context) => const LoginScreen(),
         '/auth/otp': (context) => OtpScreen(
-              email: ModalRoute.of(context)?.settings.arguments as String,
-            ),
+          email: ModalRoute.of(context)?.settings.arguments as String? ?? '',            ),
         '/auth/register': (context) => RegisterScreen(
-              email: ModalRoute.of(context)?.settings.arguments as String,
-            ),
-        '/welcome': (context) => WelcomePage(),
+          email: ModalRoute.of(context)?.settings.arguments as String? ?? '',            ),
+        '/welcome': (context) => WelcomePage(
+          email: ModalRoute.of(context)?.settings.arguments as String? ?? '',        ),
         '/welcome/kedai': (context) => const KedaiPage(),
       },
     );

@@ -19,6 +19,7 @@ class Kedai {
   final String alamat;
   final double rating;
   final int jumlahRating;
+  final String informasi;
 
   Kedai({
     required this.name,
@@ -27,6 +28,8 @@ class Kedai {
     required this.alamat,
     required this.rating,
     required this.jumlahRating,
+    required this.informasi,
+
   });
 
   factory Kedai.fromFirestore(DocumentSnapshot doc) {
@@ -37,6 +40,7 @@ class Kedai {
       iconPath: data['iconPath'] ?? '',
       alamat: data['alamat'] ?? '',
       rating: (data['rating'] ?? 0).toDouble(),
+      informasi: data['informasi'] ?? '',
       jumlahRating: data['jumlahRating'] ?? 0,
     );
   }
