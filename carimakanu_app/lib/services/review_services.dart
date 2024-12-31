@@ -25,9 +25,9 @@ class ReviewService {
   Future<void> addReview(ReviewModel review) async {
     try {
       CollectionReference reviewCollection = FirebaseFirestore.instance
-          .collection('kedai')
+          .collection('Kedai')
           .doc(kedaiId)
-          .collection('review');
+          .collection('Review');
 
       // Tambahkan dokumen baru ke Firestore
       await reviewCollection.add({
@@ -35,6 +35,9 @@ class ReviewService {
         'rating': review.rating,
         'date': review.date,
         'reviewText': review.reviewText,
+        'kebersihan': review.kebersihan,
+        // 'rasa' : review.rasa,
+        // 'lokasi': review.lokasi
       });
     } catch (e) {
       throw Exception('Failed to add review: $e');

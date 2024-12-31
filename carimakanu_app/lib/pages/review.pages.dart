@@ -99,11 +99,22 @@ class ReviewCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: 8),
-          Text(review.reviewText),
+          Text(review.reviewText,
+              style: TextStyle(fontFamily: 'Lexend')
+          ),
           SizedBox(height: 8),
+          Text('Rasa: ${review.rasa}',
+              style: TextStyle(fontFamily: 'Lexend')
+          ),
+          Text('Kebersihan: ${review.kebersihan}',
+              style: TextStyle(fontFamily: 'Lexend')
+          ),
+          Text('Lokasi: ${review.lokasi}',
+          style: TextStyle(fontFamily: 'Lexend'),
+          ),
           Text(
             'Direview pada ${review.date}',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(color: Colors.grey, fontFamily: 'Lexend'),
           ),
         ],
       ),
@@ -135,7 +146,7 @@ AppBar appBar(BuildContext context) {
           ),
         ),
         Text(
-          'Detail Information',
+          'Review',
           style: TextStyle(
             fontFamily: 'Lexend',
             fontWeight: FontWeight.bold,
