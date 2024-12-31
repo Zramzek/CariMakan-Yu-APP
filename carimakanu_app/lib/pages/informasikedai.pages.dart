@@ -28,20 +28,34 @@ class _informasiKedaiState extends State<informasiKedai> {
   @override
   void initState() {
     super.initState();
-    fetchDocumentId();
-    fetchMenus();
+    fetchDocumentId().then((_) {
+      fetchMenus(kedaiDocId);
+    });
 
   }
 
-  Future<void> fetchMenus() async {
+  Future<void> fetchMenus(String? docId) async {
     try {
-      List<MenuModel> fetchedMenus = await menuService.fetchMenus();
+      final menuCollection = FirebaseFirestore.instance
+          .collection('Kedai')
+          .doc(docId)
+          .collection('Menu');
+
+      // Ambil data menu dari subkoleksi
+      final querySnapshot = await menuCollection.get();
+      List<MenuModel> fetchedMenus = querySnapshot.docs.map((doc) {
+        return MenuModel(
+          Desk: doc['desk'],
+          idMenu: doc['idMenu'],
+          Harga: (doc['harga'] as num).toDouble(),        );
+      }).toList();
+
       setState(() {
         menus = fetchedMenus;
         isLoading = false;
       });
     } catch (e) {
-      print('Error loading menus: $e');
+      print('Error fetching menus: $e');
       setState(() {
         isLoading = false;
       });
@@ -57,8 +71,9 @@ class _informasiKedaiState extends State<informasiKedai> {
 
       if (snapshot.docs.isNotEmpty) {
         setState(() {
-          kedaiDocId = snapshot.docs.first.id; // Get document ID
+          kedaiDocId = snapshot.docs.first.id;
         });
+        fetchMenus(kedaiDocId); // Ambil data setelah ID diperoleh
       }
     } catch (e) {
       print('Error fetching document ID: $e');
