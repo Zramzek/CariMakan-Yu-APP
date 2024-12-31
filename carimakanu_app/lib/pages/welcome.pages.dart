@@ -1,5 +1,6 @@
 import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/search.page.dart';
+import 'package:carimakanu_app/pages/informasikedai.pages.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:carimakanu_app/services/person.services.dart';
 import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
@@ -44,36 +45,12 @@ class _WelcomePageState extends State<WelcomePage> {
     }
   }
 
-  Future<void> fetchUsername(String email) async {
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('Person')
-          .doc(email)
-          .get();
-
-      if (userDoc.exists) {
-        setState(() {
-          username = userDoc['username'];
-          isLoading = false;
-        });
-      } else {
-        throw Exception('User document does not exist');
-      }
-    } catch (e) {
-      print('Error fetching username: $e');
-      setState(() {
-        username = 'Guest'; // Fallback in case of errors
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.white,
-        appBar: appBarWelcomePage(),
+        appBar: appBarWelcomePage(context),
         body: ListView(
           padding: const EdgeInsets.all(16.0),
           children: [
@@ -85,26 +62,17 @@ class _WelcomePageState extends State<WelcomePage> {
             AllProducts(),
             const SizedBox(height: 20),
             SizedBox(
-              height: 300,
-              child: KedaiListView(
-                onItemTap: (kedai) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WelcomePage(),
-                    ),
-                  );
-                },
-              ),
+              height: 600,
+              child: buildKedaiListView(context),
             ),
           ],
         ),
-        floatingActionButton: buildKedaiButton(context),
+        floatingActionButton: ListKedai(context),
       ),
     );
   }
 
-  FloatingActionButton buildKedaiButton(BuildContext context) {
+  FloatingActionButton ListKedai(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
         Navigator.push(
@@ -115,6 +83,22 @@ class _WelcomePageState extends State<WelcomePage> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       child: SvgPicture.asset('assets/icons/Group 5.svg'),
+    );
+  }
+
+  KedaiListView buildKedaiListView(BuildContext context) {
+    return KedaiListView(
+      onItemTap: (kedai) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => informasiKedai(
+              kedai: kedai,
+              username: '$username',
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -147,22 +131,23 @@ class _WelcomePageState extends State<WelcomePage> {
 
   Container AllProducts() {
     return Container(
-      width: 400,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      decoration: BoxDecoration(
-        color: const Color(0xffD32B28),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Text(
-        'Recommended for you',
-        style: TextStyle(
-          fontFamily: 'Lexend',
-          color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
+        width: 400,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        decoration: BoxDecoration(
+          color: const Color(0xffD32B28),
+          borderRadius: BorderRadius.circular(8),
         ),
-      ),
-    );
+        child: const Text(
+          'Recommended for you',
+          style: TextStyle(
+            fontFamily: 'Lexend',
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            decorationColor: Colors.blue,
+            decorationThickness: 2,
+          ),
+        ));
   }
 
   Container _searchField(BuildContext context) {
@@ -182,7 +167,10 @@ class _WelcomePageState extends State<WelcomePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => searchPage()),
+            MaterialPageRoute(
+                builder: (context) => searchPage(
+                      username: '$username',
+                    )),
           );
         },
         child: Container(
@@ -204,7 +192,6 @@ class _WelcomePageState extends State<WelcomePage> {
                 padding: const EdgeInsets.all(4),
                 child: SvgPicture.asset('assets/icons/Search 02.svg'),
               ),
-              const Text('Search...'), // Placeholder text
             ],
           ),
         ),
@@ -212,7 +199,73 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  AppBar appBarWelcomePage() {
+  void showProfileDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.account_circle,
+                  size: 80,
+                  color: Colors.red,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '$username',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  email,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const LogoutButton(),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> fetchUsername(String email) async {
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('Person')
+          .doc(email)
+          .get();
+
+      if (userDoc.exists) {
+        setState(() {
+          username = userDoc['username'];
+          isLoading = false;
+        });
+      } else {
+        throw Exception('User document does not exist');
+      }
+    } catch (e) {
+      print('Error fetching username: $e');
+      setState(() {
+        username = 'Guest'; // Fallback in case of errors
+        isLoading = false;
+      });
+    }
+  }
+
+  AppBar appBarWelcomePage(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
@@ -233,18 +286,16 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
             ],
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => WelcomePage(),
-                ),
-              );
+          ElevatedButton(
+            onPressed: () {
+              showProfileDialog(context);
             },
-            child: SvgPicture.asset('assets/icons/User Profile Circle.svg'),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: const Color.fromRGBO(244, 67, 54, 1),
+            ),
+            child: const Text('Logout'),
           ),
-          LogoutButton(),
         ],
       ),
     );

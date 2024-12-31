@@ -1,3 +1,4 @@
+import 'package:carimakanu_app/pages/profile.pages.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:flutter/material.dart';
 
@@ -9,16 +10,18 @@ class LogoutButton extends StatelessWidget {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: Colors.white,
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromRGBO(244, 67, 54, 1),
       ),
       onPressed: () async {
+        showProfileDialog(context);
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             actions: [
               TextButton(
                 style: TextButton.styleFrom(
-                  textStyle: const TextStyle(color: Colors.red),
+                  iconColor: Colors.red,
+                  textStyle: const TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
                   final AuthServices authServices = AuthServices();
@@ -33,6 +36,7 @@ class LogoutButton extends StatelessWidget {
               ),
               TextButton(
                 style: TextButton.styleFrom(
+                  iconColor: Colors.white,
                   textStyle: const TextStyle(color: Colors.red),
                 ),
                 onPressed: () {
@@ -47,7 +51,7 @@ class LogoutButton extends StatelessWidget {
           ),
         );
       },
-      child: const Text('Logout'),
+      child: Text('Logout'),
     );
   }
 }
