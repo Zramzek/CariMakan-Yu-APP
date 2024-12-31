@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:carimakanu_app/pages/informasikedai.pages.dart';
+import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
+import 'package:carimakanu_app/pages/kedai.pages.dart';
+
 import 'package:flutter_svg/svg.dart';
 
 class searchPage extends StatefulWidget {
-  const searchPage({super.key});
+  final String username;
+  const searchPage({Key? key, required this.username});
+
 
   @override
   State<searchPage> createState() => _searchPageState();
@@ -21,11 +27,16 @@ class _searchPageState extends State<searchPage> {
               child: ListView(
                 padding: const EdgeInsets.all(16.0),
                 children: [
+                  _searchField(),
                   const SizedBox(height: 5),
                   textFieldRFY(),
                   const SizedBox(height: 20),
-                  // Add more widgets here if needed
+
                   const SizedBox(height: 20),
+                  SizedBox(
+                    height: 600, // Set a height limit for the KedaiListView
+                    child: buildKedaiListView(context),
+                  ),
                 ],
               ),
             ),
@@ -34,6 +45,39 @@ class _searchPageState extends State<searchPage> {
       ),
     );
   }
+  FloatingActionButton ListKedai(BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const KedaiPage()),
+        );
+      },
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      child:
+      SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
+    );
+  }
+
+  KedaiListView buildKedaiListView(BuildContext context) {
+    return KedaiListView(
+      onItemTap: (kedai) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => informasiKedai(
+              kedai: kedai,
+              username: widget.username,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
 
   Text textFieldRFY() {
     return const Text(

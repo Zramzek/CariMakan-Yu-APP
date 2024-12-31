@@ -7,36 +7,30 @@ import 'package:carimakanu_app/services/person.services.dart';
 import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
 import 'package:carimakanu_app/widgets/logout.widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WelcomePage extends StatefulWidget {
-  final String email;
-
-  const WelcomePage({super.key, required this.email});
+  const WelcomePage({super.key});
 
   @override
-  State<WelcomePage> createState() => _welcomePageState();
+  State<WelcomePage> createState() => _WelcomePageState();
 }
 
-class _welcomePageState extends State<WelcomePage> {
+class _WelcomePageState extends State<WelcomePage> {
   final AuthServices _authServices = AuthServices();
   final PersonServices _personServices = PersonServices();
-  String username = '';
+
+  String? username = '';
   String email = '';
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    String email = widget.email; // Get the passed email
-    if (email.isNotEmpty) {
-      fetchUsername(email); // Fetch the username from Firestore
-    }
     isSessionValid();
-
   }
 
   void isSessionValid() async {
@@ -47,8 +41,10 @@ class _welcomePageState extends State<WelcomePage> {
             (Route<dynamic> route) => false,
       );
     } else {
-      String? emailFromJWT = await _personServices.getEmailFromJWT();  // Await the future
-      email = emailFromJWT ?? '';  // If null, assign an empty string
+      String? emailFromJWT = await _personServices.getEmailFromJWT();
+      email = emailFromJWT ?? '';
+      print('Email from JWT: $email');
+      await fetchUsername(email);
     }
   }
 
@@ -70,7 +66,7 @@ class _welcomePageState extends State<WelcomePage> {
             const SizedBox(height: 20),
             SizedBox(
 
-              height: 600, // Set a height limit for the KedaiListView
+              height: 600,    
               child: buildKedaiListView(context),
             ),
           ],
@@ -83,7 +79,6 @@ class _welcomePageState extends State<WelcomePage> {
   FloatingActionButton ListKedai(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        // Navigate to KedaiPage
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const KedaiPage()),
@@ -92,18 +87,20 @@ class _welcomePageState extends State<WelcomePage> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       child:
-          SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
+          SvgPicture.asset('assets/icons/Group 5.svg'),
     );
   }
 
   KedaiListView buildKedaiListView(BuildContext context) {
     return KedaiListView(
-      onItemTap: (kedai) { // kedai is a KedaiModel object passed from the list
+      onItemTap: (kedai) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => informasiKedai(
-              kedai: kedai, // Pass the tapped KedaiModel object directly
+              kedai: kedai,
+              username: '$username',
+
             ),
           ),
         );
@@ -122,7 +119,7 @@ class _welcomePageState extends State<WelcomePage> {
               ColorFilter.mode(Colors.black.withOpacity(0.3), BlendMode.darken),
           image: const AssetImage('assets/images/makanan.png'),
           fit: BoxFit
-              .cover, // Scale the image to cover the containershape: BoxShape.circle
+              .cover,
         ),
       ),
       child: const Center(
@@ -144,8 +141,8 @@ class _welcomePageState extends State<WelcomePage> {
         width: 400,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xffD32B28), // Warna latar belakang tombol
-          borderRadius: BorderRadius.circular(8), // Membuat sudut melengku
+          color: const Color(0xffD32B28),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: const Text(
           'Recommended for you',
@@ -177,7 +174,9 @@ class _welcomePageState extends State<WelcomePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => searchPage()),
+            MaterialPageRoute(builder: (context) => searchPage(
+              username: '$username',
+            )),
           );
         },
         child: Container(
@@ -225,15 +224,15 @@ class _welcomePageState extends State<WelcomePage> {
                   color: Colors.red,
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  'Zaidan Rasyid',
+                Text(
+                  '$username',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  'zaidan.rsy145@gmail.com',
+                Text(
+                  '$email',
                   style: TextStyle(
                     color: Colors.grey,
                   ),
@@ -259,22 +258,26 @@ class _welcomePageState extends State<WelcomePage> {
 
 
 
-  Future<void> fetchUsername(String userId) async {
+  Future<void> fetchUsername(String email) async {
     try {
-      // Fetch the user document from Firestore
       DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('Person')
-          .doc(userId)
+          .doc(email)
           .get();
 
-      // Extract the username and update the state
-      setState(() {
-        username = userDoc['username'] ?? 'Guest';
-      });
+      if (userDoc.exists) {
+        setState(() {
+          username = userDoc['username'];
+          isLoading = false;
+        });
+      } else {
+        throw Exception('User document does not exist');
+      }
     } catch (e) {
       print('Error fetching username: $e');
       setState(() {
-        username = 'Guest'; // Fallback in case of error
+        username = 'Guest'; // Fallback in case of errors
+        isLoading = false;
       });
     }
   }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ReviewFormScreen extends StatefulWidget {
-  final dynamic kedai; // Replace `dynamic` with the actual type of kedai, if known
+  final String kedaiId;
+  final String username;
 
-  ReviewFormScreen({Key? key, required this.kedai}) : super(key: key);
+  ReviewFormScreen({Key? key, required this.kedaiId,required this.username}) : super(key: key);
 
   @override
   _ReviewFormScreenState createState() => _ReviewFormScreenState();
@@ -13,6 +15,51 @@ class ReviewFormScreen extends StatefulWidget {
 class _ReviewFormScreenState extends State<ReviewFormScreen> {
   int selectedRating = 0;
   final TextEditingController reviewController = TextEditingController();
+  final TextEditingController rasaController = TextEditingController();
+  final TextEditingController kebersihanController = TextEditingController();
+  final TextEditingController lokasiController = TextEditingController();
+
+  Future<void> _saveReview() async {
+    if (selectedRating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Silakan beri rating.')),
+      );
+      return;
+    }
+
+    if (reviewController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Review tidak boleh kosong.')),
+      );
+      return;
+    }
+
+    try {
+      CollectionReference reviewCollection = FirebaseFirestore.instance
+          .collection('Kedai')
+          .doc(widget.kedaiId)
+          .collection('Review');
+
+      await reviewCollection.add({
+        'idUser': widget.username, // Gantilah dengan ID user yang sesungguhnya
+        'rating': selectedRating,
+        'date': DateTime.now().toLocal().toString().split(' ')[0],
+        'reviewText': reviewController.text,
+        'rasa': rasaController.text,
+        'kebersihan': kebersihanController.text,
+        'lokasi': lokasiController.text,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Review berhasil disimpan!')),
+      );
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal menyimpan review: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +132,6 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
             ),
             SizedBox(height: 16),
 
-            // Bagian Komentar
             Text(
               'Komentar',
               style: TextStyle(
@@ -104,11 +150,11 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTextField('Rasa:'),
+                  _buildTextField('Rasa:', rasaController),
                   Divider(color: Colors.red),
-                  _buildTextField('Kebersihan:'),
+                  _buildTextField('Kebersihan:', kebersihanController),
                   Divider(color: Colors.red),
-                  _buildTextField('Lokasi:'),
+                  _buildTextField('Lokasi:', lokasiController),
                 ],
               ),
             ),
@@ -153,11 +199,7 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
                   ),
                   padding: EdgeInsets.symmetric(vertical: 16),
                 ),
-                onPressed: () {
-                  // Handle aksi simpan
-                  print("Rating: $selectedRating");
-                  print("Isi Review: ${reviewController.text}");
-                },
+                onPressed: _saveReview,
                 child: Text(
                   'Simpan',
                   style: TextStyle(
@@ -174,8 +216,9 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
     );
   }
 
-  Widget _buildTextField(String hintText) {
+  Widget _buildTextField(String hintText, TextEditingController controller) {
     return TextField(
+      controller: controller,
       decoration: InputDecoration(
         hintText: hintText,
         border: InputBorder.none,

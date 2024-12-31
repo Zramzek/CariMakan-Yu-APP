@@ -1,16 +1,69 @@
 import 'package:carimakanu_app/form/review.dart';
+import 'package:carimakanu_app/pages/review.pages.dart';
 import 'package:flutter/material.dart';
 import 'package:carimakanu_app/models/kedai.models.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:carimakanu_app/pages/profile.pages.dart';
+import 'package:carimakanu_app/models/menu.models.dart';
+import 'package:carimakanu_app/services/menu.services.dart  ';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
-
-class informasiKedai extends StatelessWidget {
+class informasiKedai extends StatefulWidget {
   final Kedai kedai;
+  final String username;
 
-  const informasiKedai({Key? key, required this.kedai}) : super(key: key);
+  const informasiKedai({Key? key, required this.kedai, required this.username})
+      : super(key: key);
 
+  @override
+  State<informasiKedai> createState() => _informasiKedaiState();
+}
+
+class _informasiKedaiState extends State<informasiKedai> {
+  late MenuService menuService;
+  List<MenuModel> menus = [];
+  bool isLoading = true;
+  String? kedaiDocId;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDocumentId();
+    fetchMenus();
+
+  }
+
+  Future<void> fetchMenus() async {
+    try {
+      List<MenuModel> fetchedMenus = await menuService.fetchMenus();
+      setState(() {
+        menus = fetchedMenus;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading menus: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchDocumentId() async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('Kedai')
+          .where('name', isEqualTo: widget.kedai.name) // Match by name
+          .get();
+
+      if (snapshot.docs.isNotEmpty) {
+        setState(() {
+          kedaiDocId = snapshot.docs.first.id; // Get document ID
+        });
+      }
+    } catch (e) {
+      print('Error fetching document ID: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +74,18 @@ class informasiKedai extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Title Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                kedai.name, // Display the name above the image
+                widget.kedai.name,
                 style: TextStyle(
-                    fontSize: 32, // Adjusted font size
+                    fontSize: 32,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Lexend'
                 ),
               ),
             ),
-            const SizedBox(height: 8), // Add some spacing between title and image
+            const SizedBox(height: 8),
 
             // Image Section
             Padding(
@@ -43,29 +95,27 @@ class informasiKedai extends StatelessWidget {
                   width: 316,
                   height: 164,
                   decoration: BoxDecoration(
-                    color: Colors.white, // White background for the container
-                    borderRadius: BorderRadius.circular(15), // Rounded corners
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5), // Subtle shadow
+                        color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: Offset(0, 3), // Shadow position
+                        offset: Offset(0, 3),
                       ),
                     ],
                   ),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(15), // Match border radius
+                    borderRadius: BorderRadius.circular(15),
                     child: Image.asset(
-                      kedai.iconPath, // Use the image path from kedai
+                      widget.kedai.iconPath,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
               ),
             ),
-
-            // Title and Rating Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
@@ -74,32 +124,46 @@ class informasiKedai extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 16), // Add some spacing
-                      Row(
-                        children: [
-                          // Display stars dynamically based on the rating
-                          for (int i = 0; i < 5; i++)
-                            Icon(
-                              i < kedai.rating ? Icons.star : Icons.star_border,
-                              color: Colors.orange,
-                              size: 18,
-                            ),
-                          SizedBox(width: 4),
-                          Text(kedai.rating.toString()),
-                          Text(' · ${kedai.jumlahRating} ratings'),
-                        ],
+                      SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () {
+                          if (kedaiDocId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ReviewPage(kedaiId: kedaiDocId!),
+                              ),
+                            );
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            for (int i = 0; i < 5; i++)
+                              Icon(
+                                i < widget.kedai.rating ? Icons.star : Icons.star_border,
+                                color: Colors.orange,
+                                size: 18,
+                              ),
+                            SizedBox(width: 4),
+                            Text(widget.kedai.rating.toString()),
+                            Text(' · ${widget.kedai.jumlahRating} ratings'),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                          MaterialPageRoute(
-                          builder: (context) => ReviewFormScreen(
-                        kedai: kedai, // Replace with the actual kedai object
-                      )),
-                      );                    },
+                      if (kedaiDocId != null) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ReviewFormScreen(
+                                  kedaiId: kedaiDocId!,
+                                  username: widget.username,
+                                )));
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
@@ -113,7 +177,7 @@ class informasiKedai extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                kedai.kategori, // Use the Kategori description from kedai
+                widget.kedai.kategori,
                 style: TextStyle(
                     fontSize: 12, color: Colors.black54, fontFamily: 'Lexend', fontWeight: FontWeight.bold),
               ),
@@ -133,7 +197,7 @@ class informasiKedai extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                kedai.informasi, // Use the Kategori description from kedai
+                widget.kedai.informasi,
                 style: TextStyle(
                     fontSize: 14, color: Colors.black54, fontWeight: FontWeight.bold, fontFamily: 'Lexend'),
               ),
@@ -141,7 +205,6 @@ class informasiKedai extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Map Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: const Text(
@@ -158,45 +221,130 @@ class informasiKedai extends StatelessWidget {
               child: Container(
                 height: 200,
                 width: double.infinity,
-                color: Colors.grey[300], // Placeholder for map
+                color: Colors.grey[300],
                 child: const Center(
                   child: Text('Map Placeholder'),
                 ),
               ),
             ),
+            // Daftar Menu
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: const Text(
+                'Daftar Menu',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Lexend',
+                ),
+              ),
+            ),
+            isLoading
+                ? Center(child: CircularProgressIndicator()) // Loading Indicator
+                : menus.isEmpty
+                ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Tidak ada menu tersedia.',
+                style: TextStyle(fontSize: 16, fontFamily: 'Lexend'),
+              ),
+            )
+                : ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: menus.length,
+              itemBuilder: (context, index) {
+                final menu = menus[index];
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.all(12.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      // Gambar Menu
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: const DecorationImage(
+                            image: AssetImage('assets/images/martabak_sample.jpg'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // Detail Menu
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              menu.idMenu,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Lexend',
+                              ),
+                            ),
+                            Text(
+                              'Rp.${menu.Harga.toStringAsFixed(0)}',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              menu.Desk,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12, color: Colors.black54),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
 
-            // Menu Section (Optional)
-            // If you have a menu in the KategoriModel, include the menu section here.
           ],
         ),
       ),
-
     );
   }
 
-
-
-
-
   AppBar appBar(BuildContext context) {
     return AppBar(
-      automaticallyImplyLeading: false, // Disable the default back button
-      backgroundColor: Colors.white, // Background color of the AppBar
-      elevation: 0, // Remove shadow
+      automaticallyImplyLeading: false,
+      backgroundColor: Colors.white,
+      elevation: 0,
       toolbarHeight: 70.0,
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // Custom Back Button Icon
           GestureDetector(
             onTap: () {
-              Navigator.pop(context); // Go back to the previous screen
+              Navigator.pop(context);
             },
             child: Container(
-              margin: EdgeInsets.only(right: 10), // Add some margin to separate it from the text
+              margin: EdgeInsets.only(right: 10),
               child: SvgPicture.asset(
                 'assets/icons/tombol back.svg',
-                width: 55, // Adjust size as needed
+                width: 55,
                 height: 54,
               ),
             ),
@@ -212,6 +360,5 @@ class informasiKedai extends StatelessWidget {
         ],
       ),
     );
-
   }
 }
