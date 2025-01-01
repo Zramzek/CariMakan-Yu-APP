@@ -1,4 +1,7 @@
 import 'package:carimakanu_app/form/daftar.menu.dart';
+import 'package:carimakanu_app/form/edit.kedai.dart';
+import 'package:carimakanu_app/form/edit.menu.dart';
+
 import 'package:carimakanu_app/form/review.dart';
 import 'package:carimakanu_app/pages/review.pages.dart';
 import 'package:flutter/material.dart';
@@ -7,13 +10,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:carimakanu_app/models/menu.models.dart';
 import 'package:carimakanu_app/services/menu.services.dart  ';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class informasiKedai extends StatefulWidget {
   final Kedai kedai;
   final String username;
+  final String idUser;
 
-  const informasiKedai({Key? key, required this.kedai, required this.username})
+  const informasiKedai({Key? key, required this.kedai, required this.username, required this.idUser})
       : super(key: key);
 
   @override
@@ -67,7 +72,7 @@ class _informasiKedaiState extends State<informasiKedai> {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('Kedai')
-          .where('name', isEqualTo: widget.kedai.name) // Match by name
+          .where('namaKedai', isEqualTo: widget.kedai.name) // Match by name
           .get();
 
       if (snapshot.docs.isNotEmpty) {
@@ -83,11 +88,14 @@ class _informasiKedaiState extends State<informasiKedai> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(context),
 
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: appBar(context),
       body: tampilanUtama(context),
-      floatingActionButton: addMenu(context,kedaiDocId),
+      floatingActionButton: widget.kedai.pemilik == widget.idUser
+          ? addMenu(context, kedaiDocId)
+          : null,
     );
   }
 
@@ -240,15 +248,42 @@ class _informasiKedaiState extends State<informasiKedai> {
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Container(
-              height: 200,
-              width: double.infinity,
-              color: Colors.grey[300],
-              child: const Center(
-                child: Text('Map Placeholder'),
+            child: GestureDetector(
+              onTap: () {
+                final googleMapsUrl = widget.kedai.mapsUrl; // URL dari Firebase atau disimpan di model
+                launchUrl(Uri.parse(googleMapsUrl));
+              },
+              child: Container(
+                height: 200,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    'https://maps.googleapis.com/maps/api/staticmap?center=${widget.kedai.latitude},${widget.kedai.longitude}&zoom=15&size=600x300&maptype=roadmap&markers=color:red%7Clabel:A%7C${widget.kedai.latitude},${widget.kedai.longitude}&key=AIzaSyDP88RZHQgPn8ETR9vsDB0y5yYbdpGyJvw',
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(child: CircularProgressIndicator());
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Center(child: Icon(Icons.error, color: Colors.red));
+                    },
+                  ),
+                ),
               ),
             ),
           ),
+
           // Daftar Menu
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -294,7 +329,6 @@ class _informasiKedaiState extends State<informasiKedai> {
                 ),
                 child: Row(
                   children: [
-                    // Gambar Menu
                     Container(
                       width: 80,
                       height: 80,
@@ -307,7 +341,6 @@ class _informasiKedaiState extends State<informasiKedai> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Detail Menu
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -337,12 +370,27 @@ class _informasiKedaiState extends State<informasiKedai> {
                         ],
                       ),
                     ),
+                    Visibility(
+                      visible: widget.idUser == widget.kedai.pemilik,
+                      child: IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          if (kedaiDocId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditMenuScreen(kedaiDocId: kedaiDocId, menu: menu),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
                   ],
                 ),
               );
             },
           ),
-
         ],
       ),
     );
@@ -389,12 +437,12 @@ FloatingActionButton addMenu(BuildContext context, String? kedaiID) {
     onPressed: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AddMenuScreen(kedaiId: kedaiID)),
+        MaterialPageRoute(builder: (context) => EditInformasiPage(kedaiID: kedaiID)),
       );
     },
     backgroundColor: Colors.transparent,
     elevation: 0,
     child:
-    SvgPicture.asset('assets/icons/Group 5.svg'),
+    SvgPicture.asset('assets/icons/edit.svg'),
   );
 }

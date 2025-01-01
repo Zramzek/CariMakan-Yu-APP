@@ -1,20 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:carimakanu_app/pages/informasikedai.pages.dart';
-import 'package:carimakanu_app/widgets/kedaiListView.widgets.dart';
-import 'package:carimakanu_app/pages/kedai.pages.dart';
-
 import 'package:flutter_svg/svg.dart';
+
+import '../models/kedai.models.dart';
 
 class searchPage extends StatefulWidget {
   final String username;
-  const searchPage({Key? key, required this.username});
-
+  final String idUser;
+  const searchPage({Key? key, required this.username, required this.idUser});
 
   @override
-  State<searchPage> createState() => _searchPageState();
+  State<searchPage> createState() => _SearchPageState();
 }
 
-class _searchPageState extends State<searchPage> {
+class _SearchPageState extends State<searchPage> {
+  final TextEditingController _searchController = TextEditingController();
+  String searchQuery = "";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,21 +26,46 @@ class _searchPageState extends State<searchPage> {
         appBar: appBarWelcomePage(),
         body: Column(
           children: [
+            _searchField(),
+            const SizedBox(height: 10),
             Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  _searchField(),
-                  const SizedBox(height: 5),
-                  textFieldRFY(),
-                  const SizedBox(height: 20),
-
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 600, // Set a height limit for the KedaiListView
-                    child: buildKedaiListView(context),
-                  ),
-                ],
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('Kedai')
+                    .where('namaKedai', isGreaterThanOrEqualTo: searchQuery)
+                    .where('namaKedai', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text('Tidak ada kedai ditemukan'));
+                  }
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        // Konversi snapshot menjadi objek Kedai
+                        var kedai = Kedai.fromFirestore(snapshot.data!.docs[index]);
+                        return ListTile(
+                          title: Text(kedai.name), // Menggunakan kedai.name dari model Kedai
+                          subtitle: Text(kedai.alamat), // Menggunakan kedai.alamat dari model Kedai
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => informasiKedai(
+                                  kedai: kedai, // Mengirim objek Kedai
+                                  username: widget.username,
+                                  idUser: widget.idUser,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      }
+                  );
+                },
               ),
             ),
           ],
@@ -45,94 +73,53 @@ class _searchPageState extends State<searchPage> {
       ),
     );
   }
-  FloatingActionButton ListKedai(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const KedaiPage()),
-        );
-      },
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      child:
-      SvgPicture.asset('assets/icons/Group 5.svg'), // Use the desired icon
-    );
-  }
 
-  KedaiListView buildKedaiListView(BuildContext context) {
-    return KedaiListView(
-      onItemTap: (kedai) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => informasiKedai(
-              kedai: kedai,
-              username: widget.username,
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-
-
-
-  Text textFieldRFY() {
-    return const Text(
-      'Recommended for you',
-      style: TextStyle(
-        color: Colors.black,
-        fontFamily: 'Lexend',
-        fontSize: 14,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-
-  Container _searchField() {
+  Widget _searchField() {
     return Container(
-      width: 400,
-      margin: const EdgeInsets.only(bottom: 5),
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-            color: Colors.black.withOpacity(0.11),
-            blurRadius: 40,
-            spreadRadius: 0.0)
-      ]),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+          ),
+        ],
+      ),
       child: TextField(
+        controller: _searchController,
         decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.all(15),
-            prefixIcon: Padding(
-              padding: const EdgeInsets.all(4),
-              child: SvgPicture.asset('assets/icons/Search 02.svg'),
-            ),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none)),
+          hintText: 'Cari kedai...',
+          border: InputBorder.none,
+          icon: SvgPicture.asset('assets/icons/Search 02.svg'),
+        ),
+        onChanged: (value) {
+          setState(() {
+            searchQuery = value;
+          });
+        },
       ),
     );
   }
 
   AppBar appBarWelcomePage() {
     return AppBar(
+      backgroundColor: Colors.white,
       toolbarHeight: 100.0,
       title: Row(
         children: [
           GestureDetector(
             onTap: () {
-              Navigator.pop(context); // Go back to the previous screen
+              Navigator.pop(context);
             },
-            child: Container(
-              child: SvgPicture.asset(
-                'assets/icons/tombol back.svg',
-                height: 54,
-              ),
+            child: SvgPicture.asset(
+              'assets/icons/tombol back.svg',
+              height: 54,
             ),
           ),
+          const SizedBox(width: 10),
           const Text(
             'Nikmati Rasa, \nTemukan Bahagia',
             style: TextStyle(

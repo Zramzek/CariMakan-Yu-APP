@@ -24,6 +24,7 @@ class KedaiServices {
     try {
       final idKedai = await generateidKedai(namaKedai);
       await _firestore.collection('Kedai').doc(idKedai).set({
+
         'namaKedai': namaKedai,
         'kategori': kategori,
         'iconPath': iconPath,

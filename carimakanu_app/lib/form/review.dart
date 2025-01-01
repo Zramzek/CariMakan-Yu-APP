@@ -64,45 +64,50 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Disable the default back button
-        backgroundColor: Colors.white, // Background color of the AppBar
-        elevation: 0, // Remove shadow
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
+        elevation: 0,
         toolbarHeight: 70.0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
+        title: Stack(
           children: [
-            // Custom Back Button Icon
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context); // Go back to the previous screen
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 10), // Add some margin to separate it from the text
-                child: SvgPicture.asset(
-                  'assets/icons/tombol back.svg',
-                  width: 55, // Adjust size as needed
-                  height: 54,
+            Center(
+              child: Text(
+                'Review',
+                style: TextStyle(
+                  fontFamily: 'Lexend',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.black, // Tambahkan warna teks sesuai kebutuhan
                 ),
               ),
             ),
-            Text(
-              'Review',
-              style: TextStyle(
-                fontFamily: 'Lexend',
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 10),
+                  child: SvgPicture.asset(
+                    'assets/icons/tombol back.svg',
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
               ),
             ),
           ],
         ),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bagian Beri Rating
             Text(
               'Beri Rating',
               style: TextStyle(
@@ -112,26 +117,46 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
               ),
             ),
             SizedBox(height: 8),
-            Row(
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    index < selectedRating
-                        ? Icons.star
-                        : Icons.star_border, // Bintang penuh atau kosong
-                    color: Colors.orange,
-                    size: 30,
+            Center(
+              child: Container(
+                width: 500, // Lebar container tetap
+                height: 80, // Tambahkan tinggi tetap untuk memastikan proporsi
+                padding: EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withOpacity(0.5 ),
+                      blurRadius: 5,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center( // Pastikan isi container di tengah
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center, // Pusatkan bintang di tengah Row
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < selectedRating ? Icons.star : Icons.star_border,
+                          color: Colors.orange,
+                          size: 35,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            selectedRating = index + 1;
+                          });
+                        },
+                      );
+                    }),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      selectedRating = index + 1; // Update rating
-                    });
-                  },
-                );
-              }),
+                ),
+              ),
+
             ),
             SizedBox(height: 16),
-
             Text(
               'Komentar',
               style: TextStyle(
@@ -142,7 +167,8 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
             ),
             SizedBox(height: 8),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              height: 500,
+              padding: EdgeInsets.all(8),
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.red, width: 2),
                 borderRadius: BorderRadius.circular(8),
@@ -151,44 +177,17 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTextField('Rasa:', rasaController),
-                  Divider(color: Colors.red),
+
                   _buildTextField('Kebersihan:', kebersihanController),
-                  Divider(color: Colors.red),
+
                   _buildTextField('Lokasi:', lokasiController),
+                  Divider(color: Colors.black, thickness: 1),
+                  _buildTextField('', reviewController)
                 ],
               ),
             ),
-
             SizedBox(height: 16),
-
-            // Large Text Box for Review
-            Text(
-              'Isi Review',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Lexend',
-              ),
-            ),
-            SizedBox(height: 8),
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.red, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                controller: reviewController,
-                maxLines: 6, // Makes it a large text box
-                decoration: InputDecoration(
-                  hintText: 'Tulis review Anda di sini...',
-                  border: InputBorder.none,
-                ),
-              ),
-            ),
-
             Spacer(),
-
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -204,6 +203,7 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
                   'Simpan',
                   style: TextStyle(
                     fontSize: 16,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Lexend',
                   ),
@@ -223,7 +223,11 @@ class _ReviewFormScreenState extends State<ReviewFormScreen> {
         hintText: hintText,
         border: InputBorder.none,
       ),
-      maxLines: 1,
+      style: TextStyle(
+        fontSize: 16,
+        fontFamily: 'Lexend',
+      ),
     );
   }
+
 }

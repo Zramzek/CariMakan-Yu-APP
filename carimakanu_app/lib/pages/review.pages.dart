@@ -110,7 +110,7 @@ class ReviewCard extends StatelessWidget {
               style: TextStyle(fontFamily: 'Lexend')
           ),
           Text('Lokasi: ${review.lokasi}',
-          style: TextStyle(fontFamily: 'Lexend'),
+            style: TextStyle(fontFamily: 'Lexend'),
           ),
           Text(
             'Direview pada ${review.date}',
@@ -158,4 +158,3 @@ AppBar appBar(BuildContext context) {
   );
 
 }
-

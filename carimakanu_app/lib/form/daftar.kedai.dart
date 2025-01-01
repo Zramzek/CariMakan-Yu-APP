@@ -6,38 +6,44 @@ class TambahInformasiScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         elevation: 0,
         toolbarHeight: 70.0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+        title: Stack(
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 10),
-                child: SvgPicture.asset(
-                  'assets/icons/tombol back.svg',
-                  width: 55,
-                  height: 54,
+            Center(
+              child: Text(
+                'Review',
+                style: TextStyle(
+                  fontFamily: 'Lexend',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  color: Colors.black, // Tambahkan warna teks sesuai kebutuhan
                 ),
               ),
             ),
-            Text(
-              'Tambah Informasi',
-              style: TextStyle(
-                fontFamily: 'Lexend',
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Colors.black,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: 10),
+                  child: SvgPicture.asset(
+                    'assets/icons/tombol back.svg',
+                    width: 50,
+                    height: 50,
+                  ),
+                ),
               ),
             ),
           ],
         ),
+
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

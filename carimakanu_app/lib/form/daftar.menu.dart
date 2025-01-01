@@ -84,39 +84,8 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false, // Disable the default back button
-        backgroundColor: Colors.white, // Background color of the AppBar
-        elevation: 0, // Remove shadow
-        toolbarHeight: 70.0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
-          children: [
-            // Custom Back Button Icon
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context); // Go back to the previous screen
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 10), // Add some margin to separate it from the text
-                child: SvgPicture.asset(
-                  'assets/icons/tombol back.svg',
-                  width: 55, // Adjust size as needed
-                  height: 54,
-                ),
-              ),
-            ),
-            Text(
-              'Review',
-              style: TextStyle(
-                fontFamily: 'Lexend',
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              ),
-            ),
-          ],
-        ),
-      ),
+      backgroundColor: Colors.white,
+      appBar: buildAppBar(context),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
@@ -208,6 +177,42 @@ class _AddMenuScreenState extends State<AddMenuScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  AppBar buildAppBar(BuildContext context) {
+    return AppBar(
+      automaticallyImplyLeading: false, // Disable the default back button
+      backgroundColor: Colors.white, // Background color of the AppBar
+      elevation: 0, // Remove shadow
+      toolbarHeight: 70.0,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start
+        children: [
+          // Custom Back Button Icon
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context); // Go back to the previous screen
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 10), // Add some margin to separate it from the text
+              child: SvgPicture.asset(
+                'assets/icons/tombol back.svg',
+                width: 55, // Adjust size as needed
+                height: 54,
+              ),
+            ),
+          ),
+          Text(
+            'Tambahkan Menu',
+            style: TextStyle(
+              fontFamily: 'Lexend',
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+          ),
+        ],
       ),
     );
   }

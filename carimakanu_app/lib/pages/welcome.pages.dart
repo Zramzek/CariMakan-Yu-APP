@@ -24,6 +24,7 @@ class _WelcomePageState extends State<WelcomePage> {
   final PersonServices _personServices = PersonServices();
 
   String? username = '';
+  String? idUser = '';
   String email = '';
   bool isLoading = true;
 
@@ -100,6 +101,7 @@ class _WelcomePageState extends State<WelcomePage> {
             builder: (context) => informasiKedai(
               kedai: kedai,
               username: '$username',
+              idUser: '$idUser',
 
             ),
           ),
@@ -176,6 +178,7 @@ class _WelcomePageState extends State<WelcomePage> {
             context,
             MaterialPageRoute(builder: (context) => searchPage(
               username: '$username',
+              idUser: '$idUser',
             )),
           );
         },
@@ -268,6 +271,7 @@ class _WelcomePageState extends State<WelcomePage> {
       if (userDoc.exists) {
         setState(() {
           username = userDoc['username'];
+          idUser = userDoc['idUser'];
           isLoading = false;
         });
       } else {
@@ -277,6 +281,7 @@ class _WelcomePageState extends State<WelcomePage> {
       print('Error fetching username: $e');
       setState(() {
         username = 'Guest'; // Fallback in case of errors
+        idUser = '';
         isLoading = false;
       });
     }

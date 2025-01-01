@@ -13,6 +13,7 @@ class Kedai {
 
   //   }
   // }
+  final String pemilik;
   final String name;
   final String kategori;
   final String iconPath;
@@ -20,8 +21,12 @@ class Kedai {
   final double rating;
   final int jumlahRating;
   final String informasi;
+  final String mapsUrl;
+  final double latitude; // Tambahkan ini
+  final double longitude; // Tambahkan ini
 
   Kedai({
+    required this.pemilik,
     required this.name,
     required this.kategori,
     required this.iconPath,
@@ -29,19 +34,26 @@ class Kedai {
     required this.rating,
     required this.jumlahRating,
     required this.informasi,
+    required this.mapsUrl,
+    required this.latitude,
+    required this.longitude,
 
   });
 
   factory Kedai.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Kedai(
-      name: data['name'] ?? '',
+      pemilik: data['idUser'] ?? '',
+      name: data['namaKedai'] ?? '',
       kategori: data['kategori'] ?? '',
       iconPath: data['iconPath'] ?? '',
       alamat: data['alamat'] ?? '',
       rating: (data['rating'] ?? 0).toDouble(),
       informasi: data['informasi'] ?? '',
       jumlahRating: data['jumlahRating'] ?? 0,
+      mapsUrl: data['mapsUrl'] ?? '',
+      latitude: (data['latitude'] ?? 0).toDouble(),
+      longitude: (data['longitude'] ?? 0).toDouble(),
     );
   }
 }
