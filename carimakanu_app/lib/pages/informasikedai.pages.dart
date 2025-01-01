@@ -50,7 +50,7 @@ class _informasiKedaiState extends State<informasiKedai> {
     try {
       QuerySnapshot snapshot = await FirebaseFirestore.instance
           .collection('Kedai')
-          .where('name', isEqualTo: widget.kedai.name) // Match by name
+          .where('name', isEqualTo: widget.kedai.namaKedai) // Match by name
           .get();
 
       if (snapshot.docs.isNotEmpty) {
@@ -67,6 +67,7 @@ class _informasiKedaiState extends State<informasiKedai> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(context),
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +75,7 @@ class _informasiKedaiState extends State<informasiKedai> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                widget.kedai.name,
+                widget.kedai.namaKedai,
                 style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,

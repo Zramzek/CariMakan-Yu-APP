@@ -10,7 +10,12 @@ class KedaiListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('Kedai').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('Kedai')
+          .limit(
+            3,
+          )
+          .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -60,7 +65,7 @@ class KedaiListView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            kedai.name,
+                            kedai.namaKedai,
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

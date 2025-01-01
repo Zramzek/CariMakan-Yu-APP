@@ -24,7 +24,7 @@ class KedaiServices {
     String namaKedai,
     String informasi,
     String kategori,
-    String subKategori,
+    String subkategori,
     String iconPath,
     String alamat,
   ) async {
@@ -34,14 +34,16 @@ class KedaiServices {
         'idKedai': idKedai,
         'idUser': idUser,
         'namaKedai': namaKedai,
-        'informasi': informasi,
         'kategori': kategori,
-        'subkategori': subKategori,
-        'iconPath': iconPath,
+        'subKategori': subkategori,
+        'informasi': informasi,
         'alamat': alamat,
         'rating': 0,
         'jumlahRating': 0,
-        'created_at': FieldValue.serverTimestamp(),
+        'iconPath': iconPath,
+        'status':
+            'waiting confirmation', // status : waiting confirmation (default baru diinput belum acc admin), active (diacc sama admin), rejected (ditolak admin)
+        // 'createdAt': FieldValue.serverTimestamp(),
       });
       print('Success adding kedai to Firestore');
       await _authServices.updateRole(idUser);

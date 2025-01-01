@@ -1,4 +1,3 @@
-import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/search.page.dart';
 import 'package:carimakanu_app/pages/informasikedai.pages.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
@@ -75,14 +74,12 @@ class _WelcomePageState extends State<WelcomePage> {
   FloatingActionButton ListKedai(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const KedaiPage()),
-        );
+        Navigator.pushNamed(context, '/welcome/kedai');
       },
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.red,
       elevation: 0,
-      child: SvgPicture.asset('assets/icons/Group 5.svg'),
+      shape: const CircleBorder(),
+      child: const Image(image: AssetImage('assets/images/House.png')),
     );
   }
 

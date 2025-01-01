@@ -1,3 +1,4 @@
+import 'package:carimakanu_app/form/daftarkedai.form.dart';
 import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
@@ -43,7 +44,7 @@ class _CariMakanuAPP extends State<MyApp> {
     return MaterialApp(
       title: 'My Flutter App',
       theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.yellow,
           textTheme: GoogleFonts.leagueSpartanTextTheme()),
       initialRoute: widget.isValidSession == true ? '/welcome' : '/auth',
       routes: {
@@ -56,6 +57,7 @@ class _CariMakanuAPP extends State<MyApp> {
             ),
         '/welcome': (context) => WelcomePage(),
         '/welcome/kedai': (context) => const KedaiPage(),
+        '/welcome/kedai/kedaiForm': (context) => daftarKedaiForm(),
       },
     );
   }

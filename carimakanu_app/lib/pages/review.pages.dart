@@ -1,7 +1,6 @@
 import 'package:carimakanu_app/services/review.services.dart';
 import 'package:flutter/material.dart';
 import 'package:carimakanu_app/models/review.models.dart';
-import 'package:carimakanu_app/services/review.services.dart';
 import 'package:flutter_svg/svg.dart';
 
 class ReviewPage extends StatefulWidget {
