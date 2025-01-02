@@ -140,9 +140,10 @@ class _informasiKedaiState extends State<informasiKedai> {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Image.asset(
-                    widget.kedai.iconPath,
-                    fit: BoxFit.cover,
+                  child: SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Image.network(widget.kedai.iconPath, fit: BoxFit.contain),
                   ),
                 ),
               ),
