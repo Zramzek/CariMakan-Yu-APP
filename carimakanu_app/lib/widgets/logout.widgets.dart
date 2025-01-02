@@ -1,5 +1,6 @@
 import 'package:carimakanu_app/pages/profile.pages.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LogoutButton extends StatelessWidget {
@@ -23,9 +24,10 @@ class LogoutButton extends StatelessWidget {
                   iconColor: Colors.red,
                   textStyle: const TextStyle(color: Colors.white),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   final AuthServices authServices = AuthServices();
                   authServices.deleteSession();
+                  await FirebaseAuth.instance.signOut();
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     '/auth',

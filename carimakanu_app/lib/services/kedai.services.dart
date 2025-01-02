@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 
-class KedaiServices {
+class KedaiServices extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthServices _authServices = AuthServices();
 
@@ -38,7 +39,7 @@ class KedaiServices {
         'subKategori': subkategori,
         'informasi': informasi,
         'alamat': alamat,
-        'rating': 0,
+        'rating': 0.1,
         'jumlahRating': 0,
         'iconPath': iconPath,
         'status':

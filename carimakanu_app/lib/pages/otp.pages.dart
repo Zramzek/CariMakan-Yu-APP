@@ -1,5 +1,7 @@
 import 'package:carimakanu_app/helpers/jwt.helpers.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -65,6 +67,24 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
+  Future<String> getCustomTokenAndSignIn(String email, String idUser) async {
+    try {
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('generateCustomToken');
+      final response = await callable.call(<String, dynamic>{
+        'email': email,
+        'idUser': idUser, // Pass the idUser to match with your collection
+      });
+
+      await FirebaseAuth.instance.signInWithCustomToken(response.data['token']);
+      final token = response.data['token'];
+      return token;
+    } catch (e) {
+      print('Error during authentication: $e');
+      rethrow;
+    }
+  }
+
   void verifyOtp(String email, String enteredOtp) async {
     bool isValid =
         await _authServices.verifyOtpFromFirestore(email, enteredOtp);
@@ -72,6 +92,8 @@ class _OtpScreenState extends State<OtpScreen> {
     if (isValid) {
       final token = await JWTHelpers.generateToken(email);
       await _authServices.saveSession(token, email);
+      await getCustomTokenAndSignIn(email, token);
+
       if (kDebugMode) {
         print('OTP verified successfully');
       }

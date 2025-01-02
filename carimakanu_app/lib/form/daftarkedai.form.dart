@@ -21,15 +21,17 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
   final TextEditingController _namaKedaiController = TextEditingController();
   final TextEditingController _alamatController = TextEditingController();
   final TextEditingController _informasiController = TextEditingController();
+  final firebaseStorage = FirebaseStorage.instance;
 
   String? _selectedSubkategori;
   List<String> _subkategoriList = [];
   bool _isLoadingSubkategori = true;
-  File? _imageFile;
-  bool _isLoading = false;
   String? idUser = '';
   String? _selectedKategori;
+  File? imageFile = null;
+  bool _isLoading = false;
 
+  @override
   void initState() {
     super.initState();
     _loadSubkategori();
@@ -40,23 +42,33 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      setState(() {
-        _imageFile = File(image.path);
-      });
+      String extension = image.path.split('.').last.toLowerCase();
+
+      final allowedFormats = ['jpg', 'jpeg', 'png'];
+
+      if (allowedFormats.contains(extension)) {
+        setState(() {
+          imageFile = File(image.path);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select a JPG, JPEG or PNG file'),
+          ),
+        );
+      }
     }
   }
 
   Future<String?> _uploadImage() async {
-    if (_imageFile == null) return null;
-
     try {
-      final storageRef = FirebaseStorage.instance
-          .ref()
-          .child('kedai_images')
-          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+      String filePath =
+          'kedai_images/${DateTime.now().millisecondsSinceEpoch}.png';
 
-      await storageRef.putFile(_imageFile!);
-      return await storageRef.getDownloadURL();
+      await firebaseStorage.ref(filePath).putFile(imageFile!);
+
+      String donwloadURL = await firebaseStorage.ref(filePath).getDownloadURL();
+      return donwloadURL;
     } catch (e) {
       print('Error uploading image: $e');
       return null;
@@ -215,21 +227,24 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
           .doc(email)
           .get();
 
+      print('Email: $email');
+
       if (userDoc.exists) {
-        setState(() {
-          idUser = userDoc['idUser'];
-          _isLoading = false;
-        });
+        print('ID user: $userDoc["idUser"]');
+        return userDoc['idUser'];
       } else {
         throw Exception('User document does not exist');
       }
     } catch (e) {
-      print('Error fetching username: $e');
-      setState(() {
-        _isLoading = false;
-      });
+      print('Error fetching User ID : $e');
+      return null;
     }
-    return null;
+  }
+
+  void _deleteImage() {
+    setState(() {
+      imageFile = File('');
+    });
   }
 
   Future<void> _submitForm() async {
@@ -250,7 +265,7 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
       return;
     }
 
-    if (_imageFile == null) {
+    if (imageFile == File('')) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select an image')),
       );
@@ -263,10 +278,13 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
       final imageUrl = await _uploadImage() ?? '';
       String? emailFromJWT = await _personServices.getEmailFromJWT();
       var email = emailFromJWT ?? '';
-      final idUser = await fetchIdUser(email);
+      String? idUser = await fetchIdUser(email);
 
+      if (idUser == null) {
+        throw Exception('User ID not found');
+      }
       await _kedaiServices.addKedaitoFirestore(
-        idUser!,
+        idUser,
         _namaKedaiController.text,
         _informasiController.text,
         _selectedKategori!,
@@ -279,13 +297,15 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
         const SnackBar(content: Text('Kedai successfully added!')),
       );
 
+      Navigator.pop(context);
+
       _namaKedaiController.clear();
       _alamatController.clear();
       _informasiController.clear();
       setState(() {
         _selectedKategori = null;
         _selectedSubkategori = null;
-        _imageFile = null;
+        imageFile = File('');
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -414,25 +434,38 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _pickImage,
-                    child: const Text('Select Image',
-                        style: TextStyle(
-                          color: Colors.white,
-                        )),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: _pickImage,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text('Select Image',
+                            style: TextStyle(
+                              color: Colors.white,
+                            )),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: _deleteImage,
+                      ),
+                    ],
                   ),
-                  if (_imageFile != null) ...[
+                  if (imageFile != null) ...[
                     const SizedBox(height: 8),
-                    Image.file(
-                      _imageFile!,
-                      height: 200,
-                      fit: BoxFit.cover,
+                    Stack(
+                      alignment: Alignment.topRight,
+                      children: [
+                        Image.file(
+                          imageFile!,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ],
                     ),
                   ],
-                  if (_imageFile == null) ...[
+                  if (imageFile == null) ...[
                     const Padding(
                       padding: EdgeInsets.only(left: 12, top: 8),
                       child: Text(
@@ -449,15 +482,15 @@ class _daftarKedaiFormState extends State<daftarKedaiForm> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _submitForm,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                ),
                 child: _isLoading
                     ? const CircularProgressIndicator()
                     : const Text('Submit',
                         style: TextStyle(
                           color: Colors.white,
                         )),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                ),
               ),
             ],
           ),

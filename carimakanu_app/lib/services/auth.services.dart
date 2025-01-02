@@ -163,8 +163,6 @@ Terima kasih telah menggunakan CariMakan-U!
       final currentTime = DateTime.now().toIso8601String();
       await storage.write(key: 'sessionToken', value: token);
       await storage.write(key: 'email', value: email);
-      // username = await fetchUsername();
-      // await storage.write(key: 'username', value: username);
       await storage.write(key: 'lastAccessTime', value: currentTime);
     } catch (e) {
       if (kDebugMode) {
