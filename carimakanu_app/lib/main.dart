@@ -1,9 +1,11 @@
+import 'package:carimakanu_app/form/daftar.kedai.dart';
 import 'package:carimakanu_app/pages/kedai.pages.dart';
 import 'package:carimakanu_app/pages/login.pages.dart';
 import 'package:carimakanu_app/pages/otp.pages.dart';
 import 'package:carimakanu_app/pages/regis.pages.dart';
 import 'package:carimakanu_app/pages/welcome.pages.dart';
 import 'package:carimakanu_app/services/auth.services.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,6 +19,9 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug,
   );
   final AuthServices _authServices = AuthServices();
   final isValidSession = await _authServices.validateSession();
@@ -43,7 +48,7 @@ class _CariMakanuAPP extends State<MyApp> {
     return MaterialApp(
       title: 'My Flutter App',
       theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.yellow,
           textTheme: GoogleFonts.leagueSpartanTextTheme()),
       initialRoute: widget.isValidSession == true ? '/welcome' : '/auth',
       routes: {
@@ -56,6 +61,7 @@ class _CariMakanuAPP extends State<MyApp> {
         ),
         '/welcome': (context) => WelcomePage(),
         '/welcome/kedai': (context) => const KedaiPage(),
+        '/welcome/kedai/kedaiForm': (context) => daftarKedaiForm(),
       },
     );
   }

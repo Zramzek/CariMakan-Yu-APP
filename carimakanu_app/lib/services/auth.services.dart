@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:carimakanu_app/config/mailer.config.dart';
 import 'package:carimakanu_app/config/otp.config.dart';
 import 'package:carimakanu_app/helpers/jwt.helpers.dart';
+import 'package:carimakanu_app/models/person.models.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
@@ -11,20 +12,6 @@ class AuthServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final MailerConfig mailerConfig = MailerConfig();
   final storage = FlutterSecureStorage();
-
-  // Future<Person?> getPersonByEmail(String email) async {
-  //   try {
-  //     DocumentSnapshot doc =
-  //         await _firestore.collection('Person').doc(email).get();
-  //     if (doc.exists) {
-  //       return Person.fromFirestore(doc);
-  //     }
-  //     return null;
-  //   } catch (e) {
-  //     print('Error fetching person: $e');
-  //     return null;
-  //   }
-  // }
 
   Future<String> checkEmailRegistration(String email) async {
     try {
@@ -36,42 +23,24 @@ class AuthServices {
     }
   }
 
-  Future<String> generateidUser(String email) async {
-    String idUser;
+  Future<String> generateIdUser(String email) async {
     try {
       final bytes = utf8.encode(email);
-      idUser = sha256.convert(bytes).toString();
+      return sha256.convert(bytes).toString();
     } catch (e) {
-      idUser = 'error';
       print('Error generating userId: $e');
+      return 'error';
     }
-    return idUser;
   }
-
-  // Future<void> createPerson(Person person) async {
-  //   Future<void> createPerson(Person person) async {
-  //     try {
-  //       await _firestore
-  //           .collection('Person')
-  //           .doc(person.email)
-  //           .set(person.toFirestore());
-  //     } catch (e) {
-  //       print('Error creating person: $e');
-  //     }
-  //   }
 
   Future<void> insertEmail(String email) async {
     try {
-      final idUser = await generateidUser(email);
-      await _firestore.collection('Person').doc(email).set({
-        'idUser': idUser,
-        'email': email,
-        'username': null,
-        'hasKedai': false,
-        'otp': null,
-        'otpExpiry': null,
-        'created_at': FieldValue.serverTimestamp(),
-      });
+      final idUser = await generateIdUser(email);
+      Person person = Person(email: email, idUser: idUser);
+      await _firestore
+          .collection('Person')
+          .doc(email)
+          .set(person.toFirestore());
     } catch (e) {
       print('Error inserting email: $e');
     }
@@ -123,7 +92,6 @@ class AuthServices {
       }
 
       await updateOtp(email);
-
       return savedOtp == enteredOtp;
     } catch (e) {
       print('Error verifying OTP from Firestore: $e');
@@ -148,7 +116,7 @@ class AuthServices {
       // Generate OTP
       OTPManager otpManager = OTPManager();
       Map<String, String> generatedOtp =
-          otpManager.generateOtp(expiryDuration: const Duration(minutes: 2));
+      otpManager.generateOtp(expiryDuration: const Duration(minutes: 2));
       String otp = generatedOtp['otp']!;
       String expiryTime = generatedOtp['expiryTime']!;
 
@@ -197,37 +165,35 @@ Terima kasih telah menggunakan CariMakan-U!
       await storage.write(key: 'email', value: email);
       await storage.write(key: 'lastAccessTime', value: currentTime);
     } catch (e) {
-      print('Error saving session: $e');
+      if (kDebugMode) {
+        print('Error saving session: $e');
+      }
     }
   }
 
   Future<bool> validateSession() async {
     try {
-      final lastAccess = await storage.read(
-          key: 'lastAccessTime'); // Await the Future
+      final lastAccess = await storage.read(key: 'lastAccessTime');
 
       if (lastAccess == null) {
-        // Handle the case when there is no lastAccessTime stored
         return false;
       }
 
       final lastAccessDate = DateTime.parse(lastAccess);
       final currentTime = DateTime.now();
 
-      if (currentTime
-          .difference(lastAccessDate)
-          .inDays > 10) {
-        await storage.deleteAll(); // Ensure this is awaited
+      if (currentTime.difference(lastAccessDate).inDays > 10) {
+        await storage.deleteAll();
         return false;
       }
 
       if (JWTHelpers.validateToken() == false) {
-        await storage.deleteAll(); // Ensure this is awaited
+        await storage.deleteAll();
         return false;
       }
 
-      await storage.write(key: 'lastAccessTime',
-          value: currentTime.toIso8601String()); // Ensure this is awaited
+      await storage.write(
+          key: 'lastAccessTime', value: currentTime.toIso8601String());
       return true;
     } catch (e) {
       print('Error validating session: $e');
@@ -239,7 +205,9 @@ Terima kasih telah menggunakan CariMakan-U!
     try {
       await storage.deleteAll();
     } catch (e) {
-      print('Error deleting session: $e');
+      if (kDebugMode) {
+        print('Error deleting session: $e');
+      }
     }
   }
 }

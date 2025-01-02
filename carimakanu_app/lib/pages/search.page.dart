@@ -92,11 +92,9 @@ class _SearchPageState extends State<searchPage> {
                       ],
                     );
                   }
-
                   return ListView.builder(
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      // Konversi snapshot menjadi objek Kedai
                       var kedai = Kedai.fromFirestore(snapshot.data!.docs[index]);
                       return GestureDetector(
                         onTap: () {
@@ -104,14 +102,13 @@ class _SearchPageState extends State<searchPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => informasiKedai(
-                                kedai: kedai, // Mengirim objek Kedai
+                                kedai: kedai,
                                 username: widget.username,
                                 idUser: widget.idUser,
                               ),
                             ),
                           );
                         },
-
                         child: Container(
                           padding: const EdgeInsets.all(16.0),
                           decoration: BoxDecoration(

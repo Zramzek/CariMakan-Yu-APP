@@ -53,7 +53,11 @@ class _informasiKedaiState extends State<informasiKedai> {
         return MenuModel(
           Desk: doc['desk'],
           idMenu: doc['idMenu'],
-          Harga: (doc['harga'] as num).toDouble(),        );
+          Harga: (doc['harga'] as num).toDouble(),
+          imageUrl: doc.data().containsKey('imageUrl')  // Cek apakah 'imageUrl' ada
+              ? doc['imageUrl'] // Jika ada, gunakan nilainya
+              : '',
+        );
       }).toList();
 
       setState(() {
@@ -116,8 +120,6 @@ class _informasiKedaiState extends State<informasiKedai> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Image Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Center(
@@ -329,14 +331,40 @@ class _informasiKedaiState extends State<informasiKedai> {
                 ),
                 child: Row(
                   children: [
+                    // Menggunakan imageUrl dari Firebase Storage
                     Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        image: const DecorationImage(
-                          image: AssetImage('assets/images/martabak_sample.jpg'),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: menu.imageUrl != null && menu.imageUrl.isNotEmpty
+                            ? Image.network(
+                          menu.imageUrl,
                           fit: BoxFit.cover,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(
+                                value: loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                    (loadingProgress.expectedTotalBytes ?? 1)
+                                    : null,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) => const Icon(
+                            Icons.broken_image,
+                            size: 50,
+                            color: Colors.red,
+                          ),
+                        )
+                            : const Icon(
+                          Icons.image_not_supported,
+                          size: 50,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
@@ -379,7 +407,10 @@ class _informasiKedaiState extends State<informasiKedai> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => EditMenuScreen(kedaiDocId: kedaiDocId, menu: menu),
+                                builder: (context) => EditMenuScreen(
+                                  kedaiDocId: kedaiDocId,
+                                  menu: menu,
+                                ),
                               ),
                             );
                           }
@@ -391,6 +422,7 @@ class _informasiKedaiState extends State<informasiKedai> {
               );
             },
           ),
+
         ],
       ),
     );

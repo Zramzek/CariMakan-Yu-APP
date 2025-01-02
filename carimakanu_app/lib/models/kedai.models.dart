@@ -22,8 +22,9 @@ class Kedai {
   final int jumlahRating;
   final String informasi;
   final String mapsUrl;
-  final double latitude; // Tambahkan ini
-  final double longitude; // Tambahkan ini
+  final double latitude;
+  final double longitude;
+  final String status;
 
   Kedai({
     required this.pemilik,
@@ -37,6 +38,8 @@ class Kedai {
     required this.mapsUrl,
     required this.latitude,
     required this.longitude,
+    required this.status
+
 
   });
 
@@ -54,6 +57,8 @@ class Kedai {
       mapsUrl: data['mapsUrl'] ?? '',
       latitude: (data['latitude'] ?? 0).toDouble(),
       longitude: (data['longitude'] ?? 0).toDouble(),
+      status: data['status'],
+
     );
   }
 }

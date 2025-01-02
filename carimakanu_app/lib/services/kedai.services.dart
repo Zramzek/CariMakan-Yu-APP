@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:carimakanu_app/services/auth.services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 
-class KedaiServices {
+class KedaiServices extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AuthServices _authServices = AuthServices();
 
@@ -19,18 +20,31 @@ class KedaiServices {
     return idKedai;
   }
 
-  Future<void> addKedaitoFirestore(String idUser, String namaKedai,
-      String kategori, String iconPath, String alamat) async {
+  Future<void> addKedaitoFirestore(
+      String idUser,
+      String namaKedai,
+      String informasi,
+      String kategori,
+      String subkategori,
+      String iconPath,
+      String alamat,
+      ) async {
     try {
       final idKedai = await generateidKedai(namaKedai);
       await _firestore.collection('Kedai').doc(idKedai).set({
-
+        'idKedai': idKedai,
+        'idUser': idUser,
         'namaKedai': namaKedai,
         'kategori': kategori,
-        'iconPath': iconPath,
+        'subKategori': subkategori,
+        'informasi': informasi,
         'alamat': alamat,
-        'rating': 0,
+        'rating': 0.1,
         'jumlahRating': 0,
+        'iconPath': iconPath,
+        'status':
+        'waiting confirmation', // status : waiting confirmation (default baru diinput belum acc admin), active (diacc sama admin), rejected (ditolak admin)
+        // 'createdAt': FieldValue.serverTimestamp(),
       });
       print('Success adding kedai to Firestore');
       await _authServices.updateRole(idUser);

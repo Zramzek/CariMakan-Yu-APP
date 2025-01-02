@@ -17,7 +17,6 @@ class ReviewModel {
     required this.rasa
   });
 
-  // Mapping dari Firestore
   factory ReviewModel.fromMap(Map<String, dynamic> data) {
     return ReviewModel(
       idUser: data['idUser'],

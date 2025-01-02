@@ -80,15 +80,12 @@ class _WelcomePageState extends State<WelcomePage> {
   FloatingActionButton ListKedai(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const KedaiPage()),
-        );
+        Navigator.pushNamed(context, '/welcome/kedai');
       },
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.red,
       elevation: 0,
-      child:
-          SvgPicture.asset('assets/icons/Group 5.svg'),
+      shape: const CircleBorder(),
+      child: const Image(image: AssetImage('assets/images/House.png')),
     );
   }
 

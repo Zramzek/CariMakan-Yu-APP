@@ -16,14 +16,14 @@ class KedaiListView extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
+          return Center(child: Text('Error: \${snapshot.error}'));
         }
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return const Center(child: Text('No data available'));
         }
 
         final kedaiList =
-            snapshot.data!.docs.map((doc) => Kedai.fromFirestore(doc)).toList();
+        snapshot.data!.docs.map((doc) => Kedai.fromFirestore(doc)).toList();
 
         return ListView.separated(
           itemCount: kedaiList.length,
@@ -51,7 +51,7 @@ class KedaiListView extends StatelessWidget {
                     SizedBox(
                       width: 100,
                       height: 100,
-                      child: Image.asset(kedai.iconPath, fit: BoxFit.contain),
+                      child: Image.network(kedai.iconPath, fit: BoxFit.contain),
                     ),
                     const SizedBox(width: 8),
                     // Text Details
@@ -67,8 +67,7 @@ class KedaiListView extends StatelessWidget {
                             ),
                           ),
                           Text(kedai.kategori),
-                          Text(
-                              '${kedai.rating} ★ | ${kedai.jumlahRating} ratings'),
+                          Text('${kedai.rating} ★ | ${kedai.jumlahRating} ratings'),
                           Text(kedai.alamat),
                         ],
                       ),
